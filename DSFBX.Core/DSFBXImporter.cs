@@ -563,9 +563,9 @@ namespace DSFBX
                         {
                             var nextPosition = geometryContent.Vertices.Positions[i];
                             var posVec3 = FbxPipeline.Vector3.Transform(
-                                new FbxPipeline.Vector3(-nextPosition.X, nextPosition.Y, nextPosition.Z) 
-                                , fbxMesh.Transform
-                                * FbxPipeline.Matrix.CreateScale(FinalScaleMultiplier)
+                                new FbxPipeline.Vector3(-nextPosition.X, nextPosition.Y, nextPosition.Z) * FinalScaleMultiplier
+                                , fbxMesh.AbsoluteTransform
+                                //* FbxPipeline.Matrix.CreateScale(FinalScaleMultiplier)
                                 //* FbxPipeline.Matrix.CreateRotationZ(MathHelper.Pi)
 
                                 );
@@ -619,9 +619,12 @@ namespace DSFBX
                                     var rotatedNormal = FbxPipeline.Vector3.Normalize(
                                         FbxPipeline.Vector3.Transform(
                                         new FbxPipeline.Vector3(-channelValue.X, channelValue.Y, channelValue.Z)
-                                        , fbxMesh.Transform
+                                        , //fbxMesh.Transform
                                         //* FbxPipeline.Matrix.CreateScale(FinalScaleMultiplier)
-                                        //* FbxPipeline.Matrix.CreateRotationZ(MathHelper.Pi)
+                                        // 
+                                        // *
+                                        // 
+                                        FbxPipeline.Matrix.CreateRotationX(-MathHelper.PiOver2)
 
                                         ));
                                     /*,

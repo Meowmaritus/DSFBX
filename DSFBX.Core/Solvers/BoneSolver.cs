@@ -47,16 +47,16 @@ namespace DSFBX.Solvers
                 newBone.Name = "SFX用";
             }
 
-            FbxPipeline.Matrix boneTrans = FbxPipeline.Matrix.CreateScale(Importer.FinalScaleMultiplier);
+            FbxPipeline.Matrix boneTrans = boneContent.Transform;// FbxPipeline.Matrix.CreateScale(Importer.FinalScaleMultiplier);
 
-            if (parentIndex == -1)
-            {
-                boneTrans *= boneContent.AbsoluteTransform;
-            }
-            else
-            {
-                boneTrans *= boneContent.Transform;
-            }
+            //if (parentIndex == -1)
+            //{
+            //    boneTrans *= boneContent.AbsoluteTransform;
+            //}
+            //else
+            //{
+            //    boneTrans *= boneContent.Transform;
+            //}
 
 
 
@@ -89,7 +89,7 @@ namespace DSFBX.Solvers
                 //var scaledTranslation = Vector3.Transform(new Vector3(translation.X, translation.Y, translation.Z), FBX_IMPORT_MATRIX);
                 //newBone.Translation = scaledTranslation;
                 //newBone.Translation = new Vector3(translation.X, translation.Y, translation.Z);
-                newBone.Scale = new FlverVector3(scale.X, scale.Y, scale.Z) / Importer.FinalScaleMultiplier;
+                newBone.Scale = new FlverVector3(scale.X, scale.Y, scale.Z) /* / Importer.FinalScaleMultiplier */;
 
                 if (newBone.Scale.X != 1 || newBone.Scale.Y != 1 || newBone.Scale.Z != 1)
                 {
@@ -119,15 +119,19 @@ namespace DSFBX.Solvers
 
 
 
-                dmy.Position = /*Vector3.Transform(*/new Vector3(boneTrans.Translation.X,
-                        boneTrans.Translation.Y,
-                        boneTrans.Translation.Z)/*,
+                dmy.Position = /*Vector3.Transform(*/new Vector3(boneContent.AbsoluteTransform.Translation.X,
+                        boneContent.AbsoluteTransform.Translation.Y,
+                        boneContent.AbsoluteTransform.Translation.Z)/*,
                         
                         //Matrix.CreateRotationY(dmyParentEuler.Y)
                         //* Matrix.CreateRotationZ(dmyParentEuler.Z)
                         //* Matrix.CreateRotationX(dmyParentEuler.X)
 
-                        )*/;
+                        )*/
+                        
+                        * Importer.FinalScaleMultiplier
+
+                        ;
                 dmy.Row2 = new Vector3(0, -0.180182f, 0);
                 dmy.Row3 = new Vector3(0, 0, -0.077194f);
                 var dmyTypeID = int.Parse(Util.GetAngleBracketContents(boneContent.Name));
