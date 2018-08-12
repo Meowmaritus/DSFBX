@@ -33,6 +33,17 @@ namespace DSFBX_GUI
             }
         }
 
+        private bool _launchModelViewerAfterImport = false;
+        public bool LaunchModelViewerAfterImport
+        {
+            get => _launchModelViewerAfterImport;
+            set
+            {
+                _launchModelViewerAfterImport = value;
+                RaisePropertyChanged();
+            }
+        }
+
         private string _inputFBX = "";
         public string InputFBX
         {

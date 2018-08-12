@@ -244,7 +244,10 @@ namespace MeowDSIO
             short upper = ReadInt16();
             short lower = ReadInt16();
 
-            return double.Parse($"{upper}.{lower}");
+            char decimalPoint = Convert.ToChar(System.Threading.Thread
+                .CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+
+            return double.Parse($"{upper}{decimalPoint}{lower}");
         }
 
         public string ReadMtdName(out byte delim)

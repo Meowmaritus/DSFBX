@@ -201,7 +201,11 @@ namespace MeowDSIO
                     "The numbers before and after the decimal can each only " +
                     "go from 0 to 65535. Therefore, the smallest version " +
                     "number is 0.00001 and the largest version number is 65535.65535 ");
-            var split = str.Split('.');
+
+            char decimalPoint = Convert.ToChar(System.Threading.Thread
+                .CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+
+            var split = str.Split(decimalPoint);
             ushort upper = ushort.Parse(split[0]);
             ushort lower = ushort.Parse(split[1]);
 

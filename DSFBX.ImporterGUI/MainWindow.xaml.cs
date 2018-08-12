@@ -181,6 +181,15 @@ namespace DSFBX_GUI
                 MessageBox.Show("Import failed. See output log for more information.", 
                     "Import Failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            else if (context.Config.LaunchModelViewerAfterImport)
+            {
+                System.Diagnostics.Process.Start(GetModelViewerExecutable(), $"\"{context.Config.OutputBND}\"");
+            }
+        }
+
+        private static string GetModelViewerExecutable()
+        {
+            return (new FileInfo(typeof(MainWindow).Assembly.Location).DirectoryName) + @"\ModelViewer\DS1MDV.exe";
         }
 
         static readonly char[] pathSep = new char[] { '\\', '/' };
