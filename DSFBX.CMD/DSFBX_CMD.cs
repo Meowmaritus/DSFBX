@@ -6,6 +6,7 @@ using MeowDSIO.DataTypes.FLVER;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -77,15 +78,64 @@ namespace DSFBX.CMD
         static void Main(string[] args)
         {
             //// TESTING ////
+
+            string fbxPathhhh = @"D:\FRPG_MOD\FBX Import Test\fluted_m_test\fluted_m_test.FBX";
+            string debugPartsbndPath = @"G:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_A_9550.partsbnd";
+            string importBonesPath = null;// @"G:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_A_2870.partsbnd";
+
+
             DoImport(new string[]
                 {
-                    @"E:\FRPG_MOD\FBX Import Test\protecter_box_man.FBX",
-                    @"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd"
-                },
-                @"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.flver"
-                //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
+                   fbxPathhhh,
+                    debugPartsbndPath
+                }
+            ,null,
+            importBonesPath
+            //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.flver"
+            //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
             );
 
+            debugPartsbndPath = @"G:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\AM_A_9550.partsbnd";
+
+            DoImport(new string[]
+                {
+                    fbxPathhhh,
+                    debugPartsbndPath
+                }
+            ,null,
+            importBonesPath
+            //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.flver"
+            //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
+            );
+
+            debugPartsbndPath = @"G:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\HD_A_9550.partsbnd";
+
+            DoImport(new string[]
+                {
+                    fbxPathhhh,
+                    debugPartsbndPath
+                }
+            ,null,
+            importBonesPath
+            //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.flver"
+            //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
+            );
+
+            debugPartsbndPath = @"G:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\LG_M_9550.partsbnd";
+
+            DoImport(new string[]
+                {
+                    fbxPathhhh,
+                    debugPartsbndPath
+                }
+            ,null,
+            importBonesPath
+            //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.flver"
+            //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
+            );
+
+            Process.Start(@"C:\Users\Meowmaritus\GitHub\MDSMDVTT-Reconstruction\bin\Debug\DS1MDV.exe", $"\"{debugPartsbndPath}\"");
+            return;
             //DoImport(new string[]
             //{
             //    @"E:\FRPG_MOD\FBX Import Test\volutelum_export\volutelum.FBX",

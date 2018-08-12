@@ -19,28 +19,28 @@ namespace MeowDSIO.DataTypes.FLVER
         public float A
         {
             get => (a / 32767.0f);
-            set => a = (short)(int)(value / 32767.0f);
+            set => a = (short)(int)(value * 32767.0f);
         }
 
         [JsonIgnore]
         public float B
         {
             get => (b / 32767.0f);
-            set => b = (short)(int)(value / 32767.0f);
+            set => b = (short)(int)(value * 32767.0f);
         }
 
         [JsonIgnore]
         public float C
         {
             get => (c / 32767.0f);
-            set => c = (short)(int)(value / 32767.0f);
+            set => c = (short)(int)(value * 32767.0f);
         }
 
         [JsonIgnore]
         public float D
         {
             get => (d / 32767.0f);
-            set => d = (short)(int)(value / 32767.0f);
+            set => d = (short)(int)(value * 32767.0f);
         }
 
         public (short A, short B, short C, short D) GetPacked()

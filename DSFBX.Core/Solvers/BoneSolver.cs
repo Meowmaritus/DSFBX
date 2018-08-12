@@ -47,66 +47,67 @@ namespace DSFBX.Solvers
                 newBone.Name = "SFX用";
             }
 
-            FbxPipeline.Matrix boneTrans = boneContent.Transform;// FbxPipeline.Matrix.CreateScale(Importer.FinalScaleMultiplier);
+            FbxPipeline.Matrix boneTrans_Xna = boneContent.Transform;// * FbxPipeline.Matrix.CreateScale(Importer.FinalScaleMultiplier);
 
-            //if (parentIndex == -1)
-            //{
-            //    boneTrans *= boneContent.AbsoluteTransform;
-            //}
-            //else
-            //{
-            //    boneTrans *= boneContent.Transform;
-            //}
+            //boneTrans_Xna *= FbxPipeline.Matrix.Invert(boneContent.Parent.Transform);
+
+            Matrix boneTrans_MonoGame = new Matrix(boneTrans_Xna.M11, boneTrans_Xna.M12, boneTrans_Xna.M13, boneTrans_Xna.M14, 
+                boneTrans_Xna.M21, boneTrans_Xna.M22, boneTrans_Xna.M23, boneTrans_Xna.M24, 
+                boneTrans_Xna.M31, boneTrans_Xna.M32, boneTrans_Xna.M33, boneTrans_Xna.M34,
+                boneTrans_Xna.M41, boneTrans_Xna.M42, boneTrans_Xna.M43, boneTrans_Xna.M44);
 
 
 
-            //if (parentIndex == -1)
-            //{
-            //    boneTrans = boneContent.AbsoluteTransform * FbxPipeline.Matrix.Invert(boneContent.Parent.AbsoluteTransform);
-            //}
-            //else
-            //{
-            //    boneTrans = boneContent.Transform;
-            //}
+            boneTrans_MonoGame *= Matrix.CreateScale(Importer.FinalScaleMultiplier);
 
-            //if (parentIndex == -1)
-            //{
-            //    FbxPipeline.Vector3 __scale = FbxPipeline.Vector3.One;
-            //    if (boneTrans.Decompose(out FbxPipeline.Vector3 _scale, out _, out _))
-            //    {
-            //        __scale = _scale;
-            //    }
 
-            //    boneTrans *= FbxPipeline.Matrix.CreateScale(new FbxPipeline.Vector3(1 / __scale.X, 1 / __scale.Y, 1 / __scale.Z));
-            //}
 
-            newBone.Translation = new Vector3(boneTrans.Translation.X, boneTrans.Translation.Y, boneTrans.Translation.Z);
+            //bool boneScaleWarning = false;
 
-            bool boneScaleWarning = false;
-
-            if (boneTrans.Decompose(out FbxPipeline.Vector3 scale, out FbxPipeline.Quaternion rotation, out FbxPipeline.Vector3 translation))
-            {
-                //var scaledTranslation = Vector3.Transform(new Vector3(translation.X, translation.Y, translation.Z), FBX_IMPORT_MATRIX);
-                //newBone.Translation = scaledTranslation;
-                //newBone.Translation = new Vector3(translation.X, translation.Y, translation.Z);
-                newBone.Scale = new FlverVector3(scale.X, scale.Y, scale.Z) /* / Importer.FinalScaleMultiplier */;
-
-                if (newBone.Scale.X != 1 || newBone.Scale.Y != 1 || newBone.Scale.Z != 1)
-                {
-                    boneScaleWarning = true;
-                }
-            }
-            else
-            {
-                throw new Exception("FBX Bone Content Transform Matrix " +
-                    "-> Decompose(out Vector3 scale, " +
-                    "out Quaternion rotation, out Vector3 translation) " +
-                    ">>FAILED<<");
-            }
+            newBone.Scale = boneTrans_MonoGame.Scale / Importer.FinalScaleMultiplier;
 
             
 
-            newBone.EulerRadian = Util.GetEuler(boneTrans);
+            //newBone.Scale = new FlverVector3(Math.Abs(newBone.Scale.X), Math.Abs(newBone.Scale.Y), Math.Abs(newBone.Scale.Z));
+
+            newBone.EulerRadian = Util.GetFlverEulerFromQuaternion(boneTrans_MonoGame.Rotation);// * new Vector3(1, -1, 1);
+
+            //newBone.EulerRadian = new Vector3(newBone.EulerRadian.X, newBone.EulerRadian.Z, newBone.EulerRadian.Y);
+
+            newBone.Translation = boneTrans_MonoGame.Translation;// * new Vector3(-1, 1, 1);
+
+            newBone.Translation *= new Vector3(-1, 1, 1);
+
+            //if (newBone.Scale.X < 0)
+            //{
+            //    newBone.Scale *= new Vector3(-1, 1, 1);
+            //    //newBone.EulerRadian *= new Vector3(1, -1, 1);
+            //    //newBone.Translation *= new Vector3(1, -1, -1);
+            //}
+
+            //if (boneTrans.Decompose(out FbxPipeline.Vector3 scale, out FbxPipeline.Quaternion rotation, out FbxPipeline.Vector3 translation))
+            //{
+            //    //var scaledTranslation = Vector3.Transform(new Vector3(translation.X, translation.Y, translation.Z), FBX_IMPORT_MATRIX);
+            //    //newBone.Translation = scaledTranslation;
+            //    //newBone.Translation = new Vector3(translation.X, translation.Y, translation.Z);
+            //    newBone.Scale = new FlverVector3(scale.X, scale.Y, scale.Z);
+
+            //    if (newBone.Scale.X != 1 || newBone.Scale.Y != 1 || newBone.Scale.Z != 1)
+            //    {
+            //        boneScaleWarning = true;
+            //    }
+            //}
+            //else
+            //{
+            //    throw new Exception("FBX Bone Content Transform Matrix " +
+            //        "-> Decompose(out Vector3 scale, " +
+            //        "out Quaternion rotation, out Vector3 translation) " +
+            //        ">>FAILED<<");
+            //}
+
+
+
+            //newBone.EulerRadian = Util.GetEuler(boneTrans);
 
             //newBone.EulerRadian.Y -= MathHelper.PiOver2;
 
@@ -119,7 +120,7 @@ namespace DSFBX.Solvers
 
 
 
-                dmy.Position = /*Vector3.Transform(*/new Vector3(boneContent.AbsoluteTransform.Translation.X,
+                dmy.Position = /*Vector3.Transform(*/new Vector3(-boneContent.AbsoluteTransform.Translation.X,
                         boneContent.AbsoluteTransform.Translation.Y,
                         boneContent.AbsoluteTransform.Translation.Z)/*,
                         
@@ -163,12 +164,12 @@ namespace DSFBX.Solvers
             //float transY = boneContent.Transform.Translation.Y;
             //float transZ = boneContent.Transform.Translation.Z;
 
-            if (boneScaleWarning)
-            {
-                Importer.PrintWarning($"Bone '{boneContent.Name}' has a scale of <{scale.X}, {scale.Y}, {scale.Z}>. " +
-                        $"Any scale different than <1.0, 1.0, 1.0> might cause the game to " +
-                        $"try to \"correct\" the scale and break something.");
-            }
+            //if (boneScaleWarning)
+            //{
+            //    Importer.PrintWarning($"Bone '{boneContent.Name}' has a scale of <{scale.X}, {scale.Y}, {scale.Z}>. " +
+            //            $"Any scale different than <1.0, 1.0, 1.0> might cause the game to " +
+            //            $"try to \"correct\" the scale and break something.");
+            //}
 
             newBone.ParentIndex = (short)parentIndex;
 
