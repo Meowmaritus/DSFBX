@@ -164,8 +164,8 @@ namespace DSFBX.CMD
 
         static void Main(string[] args)
         {
-            MEOW_DEBUG();
-            //DoImport(args);
+            //MEOW_DEBUG();
+            DoImport(args);
 
             Console.WriteLine();
             Console.WriteLine("Press any key to continue...");

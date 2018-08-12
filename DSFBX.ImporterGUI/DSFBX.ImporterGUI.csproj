@@ -171,15 +171,9 @@
     <Content Include="ModelViewer\MonoGame.Framework.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="ModelViewer\MonoGame.Framework.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <Content Include="ModelViewer\Newtonsoft.Json.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="ModelViewer\Newtonsoft.Json.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <Content Include="ModelViewer\SharpDX.Direct2D1.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
