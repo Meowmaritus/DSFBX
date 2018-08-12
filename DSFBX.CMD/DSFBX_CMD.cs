@@ -75,7 +75,7 @@ namespace DSFBX.CMD
             return success;
         }
 
-        static void Main(string[] args)
+        static void MEOW_DEBUG()
         {
             //// TESTING ////
 
@@ -89,7 +89,7 @@ namespace DSFBX.CMD
                    fbxPathhhh,
                     debugPartsbndPath
                 }
-            ,null,
+            , null,
             importBonesPath
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.flver"
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
@@ -102,7 +102,7 @@ namespace DSFBX.CMD
                     fbxPathhhh,
                     debugPartsbndPath
                 }
-            ,null,
+            , null,
             importBonesPath
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.flver"
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
@@ -115,7 +115,7 @@ namespace DSFBX.CMD
                     fbxPathhhh,
                     debugPartsbndPath
                 }
-            ,null,
+            , null,
             importBonesPath
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.flver"
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
@@ -128,7 +128,7 @@ namespace DSFBX.CMD
                     fbxPathhhh,
                     debugPartsbndPath
                 }
-            ,null,
+            , null,
             importBonesPath
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.flver"
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
@@ -160,13 +160,12 @@ namespace DSFBX.CMD
             //}
 
             //// TESTING ////
+        }
 
-
-
-
-
-            //DoImport(args);
-
+        static void Main(string[] args)
+        {
+            //MEOW_DEBUG();
+            DoImport(args);
 
             Console.WriteLine();
             Console.WriteLine("Press any key to continue...");
