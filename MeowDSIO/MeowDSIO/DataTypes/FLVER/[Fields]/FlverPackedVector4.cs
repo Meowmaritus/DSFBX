@@ -9,36 +9,36 @@ namespace MeowDSIO.DataTypes.FLVER
 {
     public class FlverPackedVector4
     {
-        private sbyte x;
-        private sbyte y;
-        private sbyte z;
-        private sbyte w;
+        private byte x;
+        private byte y;
+        private byte z;
+        private byte w;
 
         public float X
         {
-            get => (x / 127.0f);
-            set => x = (sbyte)(int)(value * 127.0f);
+            get => ((x - 127.0f) / 127.0f);
+            set => x = (byte)(int)((value * 127.0f) + 127);
         }
 
         public float Y
         {
-            get => (y / 127.0f);
-            set => y = (sbyte)(int)(value * 127.0f);
+            get => ((y - 127.0f) / 127.0f);
+            set => y = (byte)(int)((value * 127.0f) + 127);
         }
 
         public float Z
         {
-            get => (z / 127.0f);
-            set => z = (sbyte)(int)(value * 127.0f);
+            get => ((z - 127.0f) / 127.0f);
+            set => z = (byte)(int)((value * 127.0f) + 127);
         }
 
         public float W
         {
-            get => (w / 127.0f);
-            set => w = (sbyte)(int)(value * 127.0f);
+            get => ((w - 127.0f) / 127.0f);
+            set => w = (byte)(int)((value * 127.0f) + 127);
         }
 
-        public (sbyte X, sbyte Y, sbyte Z, sbyte W) GetPacked()
+        public (byte X, byte Y, byte Z, byte W) GetPacked()
         {
             return (x, y, z, w);
         }
@@ -48,7 +48,7 @@ namespace MeowDSIO.DataTypes.FLVER
 
         }
 
-        public FlverPackedVector4(sbyte packedX, sbyte packedY, sbyte packedZ, sbyte packedW)
+        public FlverPackedVector4(byte packedX, byte packedY, byte packedZ, byte packedW)
         {
             x = packedX;
             y = packedY;

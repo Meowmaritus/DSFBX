@@ -187,10 +187,10 @@ namespace MeowDSIO
         public void WriteFlverPackedVector4(FlverPackedVector4 val)
         {
             var packedVal = val.GetPacked();
-            Write((byte)(127 + packedVal.X));
-            Write((byte)(127 + packedVal.Y));
-            Write((byte)(127 + packedVal.Z));
-            Write((byte)(127 + packedVal.W));
+            Write(packedVal.X);
+            Write(packedVal.Y);
+            Write(packedVal.Z);
+            Write(packedVal.W);
         }
 
         public void WriteFlverVersion(double val)

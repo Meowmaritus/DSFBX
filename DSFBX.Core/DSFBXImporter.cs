@@ -22,6 +22,9 @@ namespace DSFBX
         public int EntityModelIndex = 0;
         public double ScalePercent = 100.0;
         public string ImportSkeletonPath = null;
+        public bool IsDoubleSided = true;
+        public bool GenerateBackup = true;
+        public double ImportedSkeletonScalePercent = 100.0;
 
         public string PlaceholderMaterialName = "P_Metal[DSB]";
 
@@ -309,7 +312,17 @@ namespace DSFBX
 
             if (ImportSkeletonPath != null)
             {
-                var skeletonSourceEntityBnd = DataFile.LoadFromFile<EntityBND>(ImportSkeletonPath);
+                EntityBND skeletonSourceEntityBnd = null;
+
+                if (ImportSkeletonPath.ToUpper().EndsWith(".DCX"))
+                {
+                    skeletonSourceEntityBnd = DataFile.LoadFromDcxFile<EntityBND>(ImportSkeletonPath);
+                }
+                else
+                {
+                    skeletonSourceEntityBnd = DataFile.LoadFromFile<EntityBND>(ImportSkeletonPath);
+                }
+
                 flver.Bones = skeletonSourceEntityBnd.Models[0].Mesh.Bones;
             }
 
@@ -368,8 +381,10 @@ namespace DSFBX
                         {
                             var faceSet = new FlverFaceSet();
 
+                            faceSet.CullBackfaces = !IsDoubleSided;
+
                             //for (int i = geometryContent.Indices.Count - 1; i >= 0; i--)
-                            for (int i = 0; i < geometryContent.Indices.Count - 2; i += 3)
+                            for (int i = 0; i < geometryContent.Indices.Count; i += 3)
                             {
                                 if (faceSet.VertexIndices.Count >= FACESET_MAX_TRIANGLES * 3)
                                 {
@@ -444,7 +459,12 @@ namespace DSFBX
                         {
                             if (geometryContent.Material != null)
                             {
-                                mtdName = geometryContent.Material.Name + ".mtd";
+                                string fbxMaterialName = geometryContent.Material.Name;
+                                if (fbxMaterialName.Contains("#"))
+                                {
+                                    fbxMaterialName = fbxMaterialName.Substring(0, fbxMaterialName.IndexOf('#'));
+                                }
+                                mtdName = fbxMaterialName.Trim() + ".mtd";
 
                                 foreach (var texKvp in geometryContent.Material.Textures)
                                 {
@@ -557,8 +577,6 @@ namespace DSFBX
                             }
                         }
 
-                        
-
                         for (int i = 0; i < geometryContent.Vertices.Positions.Count; i++)
                         {
                             var nextPosition = geometryContent.Vertices.Positions[i];
@@ -616,9 +634,9 @@ namespace DSFBX
                                     //var euler = Util.GetEuler(fbxMesh.AbsoluteTransform);
 
 
-                                    var rotatedNormal = FbxPipeline.Vector3.Normalize(
-                                        FbxPipeline.Vector3.Transform(
-                                        new FbxPipeline.Vector3(channelValue.X, channelValue.Y, channelValue.Z)
+                                    var rotatedNormal = 
+                                        FbxPipeline.Vector3.TransformNormal(
+                                        new FbxPipeline.Vector3(-channelValue.X, channelValue.Y, channelValue.Z)
                                         , //fbxMesh.Transform
                                           //* FbxPipeline.Matrix.CreateScale(FinalScaleMultiplier)
                                           // 
@@ -626,28 +644,20 @@ namespace DSFBX
                                           // 
 
                                         fbxMesh.AbsoluteTransform * FbxPipeline.Matrix.CreateScale(FinalScaleMultiplier)
-                                         * FbxPipeline.Matrix.CreateRotationY(-MathHelper.Pi)
+                                        //FbxPipeline.Matrix.Identity
+                                        // * FbxPipeline.Matrix.CreateRotationX(-MathHelper.Pi)
+
+
+                                        // * FbxPipeline.Matrix.CreateRotationX(-MathHelper.Pi)
                                         // * FbxPipeline.Matrix.CreateRotationX(MathHelper.Pi)
-                                        // * FbxPipeline.Matrix.CreateRotationX(MathHelper.Pi)
 
-                                        ));
-                                    /*,
-                                    //Matrix.CreateRotationY(euler.Y)
-                                    //* Matrix.CreateRotationZ(euler.Z)
-                                    //* Matrix.CreateRotationX(euler.X)
+                                        );
 
-                                    //* Matrix.CreateRotationY(MathHelper.Pi)
-                                    //* Matrix.CreateRotationZ(MathHelper.PiOver2)
-                                    //* Matrix.CreateRotationX(MathHelper.Pi)
+                                    rotatedNormal = FbxPipeline.Vector3.Normalize(rotatedNormal);
 
-                                    Matrix.CreateRotationX(-MathHelper.PiOver2)
-
-                                    //* Matrix.CreateRotationZ(MathHelper.Pi)
-
-                                    ))*/
-                                    ;
-
-                                    //var rotatedNormal = new Vector3(channelValue.X, channelValue.Y, channelValue.Z);
+                                    //DEBUG TEST
+                                    //rotatedNormal = new FbxPipeline.Vector3(0, 0, 1);
+                                    ////////////
 
                                     flverMesh.Vertices[i].Normal = new FlverPackedVector4()
                                     {
@@ -870,6 +880,20 @@ namespace DSFBX
                     flverMesh.BoneIndices.Add(flver.Bones.IndexOf(refBone));
                 }
 
+                //foreach (var faceset in flverMesh.FaceSets)
+                //{
+                //    for (int i = 0; i < faceset.VertexIndices.Count; i += 3)
+                //    {
+                //        var a = faceset.VertexIndices[i];
+                //        //var b = faceset.VertexIndices[i + 1];
+                //        var c = faceset.VertexIndices[i + 2];
+
+                //        faceset.VertexIndices[i] = c;
+                //        //faceset.VertexIndices[i + 1] = b;
+                //        faceset.VertexIndices[i + 2] = a;
+                //    }
+                //}
+
                 var submeshVertexIndices = flverMesh.GetAllVertexIndices();
 
                 //submeshVertexIndices.Reverse();
@@ -893,14 +917,25 @@ namespace DSFBX
 
 
 
-                for (int i = 0; i < flverMesh.Vertices.Count; i++)
-                {
-                    Vector3 thingy = Vector3.Cross(submeshHighQualityNormals[i],
-                        new Vector3(submeshHighQualityTangents[i].X,
-                        submeshHighQualityTangents[i].Y,
-                        submeshHighQualityTangents[i].Z)) * submeshHighQualityTangents[i].W;
-                    flverMesh.Vertices[i].BiTangent = new Vector4(thingy.X, thingy.Y, thingy.Z, submeshHighQualityTangents[i].W);
-                }
+                //for (int i = 0; i < flverMesh.Vertices.Count; i++)
+                //{
+                //    Vector3 thingy = Vector3.Cross(submeshHighQualityNormals[i],
+                //        new Vector3(submeshHighQualityTangents[i].X,
+                //        submeshHighQualityTangents[i].Y,
+                //        submeshHighQualityTangents[i].Z));
+
+                //    //Vector3 thingy = Vector3.Normalize(new Vector3(submeshHighQualityTangents[i].X, submeshHighQualityTangents[i].Y, submeshHighQualityTangents[i].Z));
+
+                //    //var transThingy = FbxPipeline.Vector3.Transform(new FbxPipeline.Vector3(thingy.X, thingy.Y, thingy.Z),
+                //    //    FbxPipeline.Matrix.CreateRotationZ(MathHelper.PiOver2));
+
+                //    //transThingy = FbxPipeline.Vector3.Normalize(transThingy);
+
+                //    flverMesh.Vertices[i].BiTangent = new Vector4(thingy.X, thingy.Y, thingy.Z, 0);
+
+                //    //DEBUG TEST//
+                //    //flverMesh.Vertices[i].BiTangent = new Vector4(0, 0, 1, 1);
+                //}
 
                 //Because vertices are homogenous, a simple check of the very first one should work just fine
                 structLayoutChecker.ApplyCheck(flverMesh.Vertices[0]);
@@ -933,7 +968,10 @@ namespace DSFBX
                     {
                         flverMesh.DefaultBoneIndex = flver.Bones.IndexOf(defaultBone);
                     }
-                    flverMesh.DefaultBoneIndex = -1;
+                    else
+                    {
+                        flverMesh.DefaultBoneIndex = -1;
+                    }
                 }
 
                 flver.Submeshes.Add(flverMesh);
@@ -952,7 +990,16 @@ namespace DSFBX
         {
             CheckResourceLoad();
 
-            var entityBnd = DataFile.LoadFromFile<EntityBND>(EntityBndPath);
+            EntityBND entityBnd = null;
+
+            if (EntityBndPath.ToUpper().EndsWith(".DCX"))
+            {
+                entityBnd = DataFile.LoadFromDcxFile<EntityBND>(EntityBndPath);
+            }
+            else
+            {
+                entityBnd = DataFile.LoadFromFile<EntityBND>(EntityBndPath);
+            }
 
             if (entityBnd.Models.Count <= EntityModelIndex)
             {
@@ -1142,10 +1189,10 @@ namespace DSFBX
                             }
                         }
 
-                        if (submesh.DefaultBoneIndex == -1)
-                        {
-                            submesh.DefaultBoneIndex = rootBoneIndex;
-                        }
+                        //if (submesh.DefaultBoneIndex == -1)
+                        //{
+                        //    submesh.DefaultBoneIndex = rootBoneIndex;
+                        //}
                     }
                 }
                 
@@ -1153,17 +1200,54 @@ namespace DSFBX
 
             if (ImportSkeletonPath != null)
             {
-                var skeletonSourceEntityBnd = DataFile.LoadFromFile<EntityBND>(ImportSkeletonPath);
+                EntityBND skeletonSourceEntityBnd = null;
+
+                if (ImportSkeletonPath.ToUpper().EndsWith(".DCX"))
+                {
+                    skeletonSourceEntityBnd = DataFile.LoadFromDcxFile<EntityBND>(ImportSkeletonPath);
+                }
+                else
+                {
+                    skeletonSourceEntityBnd = DataFile.LoadFromFile<EntityBND>(ImportSkeletonPath);
+                }
 
                 entityBnd.Models[EntityModelIndex].Mesh.Bones = skeletonSourceEntityBnd.Models[0].Mesh.Bones;
                 entityBnd.Models[EntityModelIndex].Mesh.Dummies = skeletonSourceEntityBnd.Models[0].Mesh.Dummies;
+
+                foreach (var b in entityBnd.Models[EntityModelIndex].Mesh.Bones)
+                {
+                    b.Translation *= (float)(ImportedSkeletonScalePercent / 100);
+                    if (b.BoundingBoxMax != null)
+                    {
+                        b.BoundingBoxMax *= (float)(ImportedSkeletonScalePercent / 100);
+                    }
+
+                    if (b.BoundingBoxMin != null)
+                    {
+                        b.BoundingBoxMin *= (float)(ImportedSkeletonScalePercent / 100);
+                    }
+                }
+
+                foreach (var d in entityBnd.Models[EntityModelIndex].Mesh.Dummies)
+                {
+                    d.Position *= (float)(ImportedSkeletonScalePercent / 100);
+                }
 
                 //entityBnd.Models[EntityModelIndex].Mesh.Header = skeletonSourceEntityBnd.Models[0].Mesh.Header;
             }
 
             OnFlverGenerated(entityBnd.Models[EntityModelIndex].Mesh);
 
-            DataFile.Resave(entityBnd);
+            
+
+            if (EntityBndPath.ToUpper().EndsWith(".DCX"))
+            {
+                DataFile.ResaveDcx(entityBnd);
+            }
+            else
+            {
+                DataFile.Resave(entityBnd);
+            }
 
             Print("\n\nImport complete.");
 
@@ -1176,7 +1260,7 @@ namespace DSFBX
             {
                 OnImportStarted();
 
-                if (!File.Exists(EntityBndPath + ".bak"))
+                if (GenerateBackup && !File.Exists(EntityBndPath + ".bak"))
                 {
                     File.Copy(EntityBndPath, EntityBndPath + ".bak");
                 }

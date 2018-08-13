@@ -9,10 +9,10 @@ namespace MeowDSIO.DataTypes.FLVER
 {
     public class FlverVertexColor
     {
-        public byte R { get; set; } = 1;
-        public byte G { get; set; } = 1;
-        public byte B { get; set; } = 1;
-        public byte A { get; set; } = 1;
+        public byte R { get; set; } = 255;
+        public byte G { get; set; } = 255;
+        public byte B { get; set; } = 255;
+        public byte A { get; set; } = 255;
 
         public static implicit operator Color(FlverVertexColor v)
         {

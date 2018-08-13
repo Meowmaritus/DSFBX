@@ -77,10 +77,11 @@
                 />
 
             <Label
-                Content="(*.partsbnd, *.objbnd, *.chrbnd)"
+                Content="(*.*bnd or *.*bnd.dcx)"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="6,69,0,0"
+                Margin="6,69,0,0" Width="174"
+                HorizontalContentAlignment="Right"
                 />
 
             <TextBox
@@ -227,6 +228,30 @@
                 Launch Model Viewer After Import
             </CheckBox>
 
+            <CheckBox
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,169,103,0"
+                Width="116"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
+                IsChecked="{Binding Config.GenerateBackup}" Height="29"
+                >
+                Generate Backup
+            </CheckBox>
+
+            <CheckBox
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,141,39,0"
+                Width="180"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
+                IsChecked="{Binding Config.ImportDoubleSided}" Height="29"
+                >
+                Import Mesh Double-Sided
+            </CheckBox>
+
             <!--Import-->
             <Button
                 x:Name="ButtonImport"
@@ -258,6 +283,30 @@
                 HorizontalContentAlignment="Right"
                 VerticalContentAlignment="Center"
                 Text="{Binding Config.ScalePercent}"
+                />
+
+            <!--Imported Skeleton Scale Percent-->
+            <Label
+                Content="Imported Skeleton Scale Percent:"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="270,171,0,0"
+                FontWeight="Bold" 
+                Width="197"
+                HorizontalContentAlignment="Left"
+                IsEnabled="{Binding Config.ImportSkeletonEnable}"
+                />
+
+            <TextBox
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="468,174,0,0"
+                Width="64"
+                Height="24"
+                HorizontalContentAlignment="Right"
+                VerticalContentAlignment="Center"
+                Text="{Binding Config.ImportedSkeletonScalePercent}"
+                IsEnabled="{Binding Config.ImportSkeletonEnable}"
                 />
         </Grid>
 

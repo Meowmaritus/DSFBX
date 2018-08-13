@@ -59,7 +59,8 @@ namespace DSFBX.CMD
                 EntityModelIndex = modelIdx,
                 FbxPath = inputFbx,
                 ImportSkeletonPath = importBonesPath,
-                ScalePercent = 100.0
+                ScalePercent = 100.0,
+                IsDoubleSided = true,
             };
 
             bool success = importer.Import();
@@ -79,7 +80,7 @@ namespace DSFBX.CMD
         {
             //// TESTING ////
 
-            string fbxPathhhh = @"D:\FRPG_MOD\FBX Import Test\fluted_m_test\fluted_m_test.FBX";
+            string fbxPathhhh = @"D:\FRPG_MOD\FBX Import Test\BD_fluted\BD_fluted.FBX";
             string debugPartsbndPath = @"G:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_A_9550.partsbnd";
             string importBonesPath = null;// @"G:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_A_2870.partsbnd";
 
@@ -95,6 +96,7 @@ namespace DSFBX.CMD
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
             );
 
+            fbxPathhhh = @"D:\FRPG_MOD\FBX Import Test\AM_fluted\AM_fluted.FBX";
             debugPartsbndPath = @"G:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\AM_A_9550.partsbnd";
 
             DoImport(new string[]
@@ -108,6 +110,7 @@ namespace DSFBX.CMD
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
             );
 
+            fbxPathhhh = @"D:\FRPG_MOD\FBX Import Test\HD_fluted\HD_fluted.FBX";
             debugPartsbndPath = @"G:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\HD_A_9550.partsbnd";
 
             DoImport(new string[]
@@ -121,6 +124,7 @@ namespace DSFBX.CMD
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
             );
 
+            fbxPathhhh = @"D:\FRPG_MOD\FBX Import Test\LG_fluted\LG_fluted.FBX";
             debugPartsbndPath = @"G:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\LG_M_9550.partsbnd";
 
             DoImport(new string[]
@@ -134,7 +138,7 @@ namespace DSFBX.CMD
             //,@"E:\SteamLibrary\steamapps\common\Dark Souls Prepare to Die Edition\DATA\parts\BD_F_9450.partsbnd.bak"
             );
 
-            Process.Start(@"C:\Users\Meowmaritus\GitHub\MDSMDVTT-Reconstruction\bin\Debug\DS1MDV.exe", $"\"{debugPartsbndPath}\"");
+            //Process.Start(@"C:\Users\Meowmaritus\GitHub\DS1MDV\DS1MDV\bin\Debug\DS1MDV.exe", $"\"{debugPartsbndPath}\"");
             return;
             //DoImport(new string[]
             //{
@@ -164,7 +168,7 @@ namespace DSFBX.CMD
 
         static void Main(string[] args)
         {
-            //MEOW_DEBUG();
+            //MEOW_DEBUG(); return;
             DoImport(args);
 
             Console.WriteLine();

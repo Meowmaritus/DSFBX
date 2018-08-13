@@ -44,6 +44,28 @@ namespace DSFBX_GUI
             }
         }
 
+        private bool _generateBackup = true;
+        public bool GenerateBackup
+        {
+            get => _generateBackup;
+            set
+            {
+                _generateBackup = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private bool _importDoubleSided = true;
+        public bool ImportDoubleSided
+        {
+            get => _importDoubleSided;
+            set
+            {
+                _importDoubleSided = value;
+                RaisePropertyChanged();
+            }
+        }
+
         private string _inputFBX = "";
         public string InputFBX
         {
@@ -88,6 +110,17 @@ namespace DSFBX_GUI
             set
             {
                 _scalePercent = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private double _ImportedSkeletonScalePercent = 100.0;
+        public double ImportedSkeletonScalePercent
+        {
+            get => _ImportedSkeletonScalePercent;
+            set
+            {
+                _ImportedSkeletonScalePercent = value;
                 RaisePropertyChanged();
             }
         }

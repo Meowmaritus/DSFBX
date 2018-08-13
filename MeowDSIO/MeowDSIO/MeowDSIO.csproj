@@ -52,6 +52,7 @@
     <Compile Include="DataFile.cs" />
     <Compile Include="DataFiles\ANIBND.cs" />
     <Compile Include="DataFiles\BND.cs" />
+    <Compile Include="DataFiles\DCX.cs" />
     <Compile Include="DataFiles\EntityBND.cs" />
     <Compile Include="DataFiles\ESD.cs" />
     <Compile Include="DataFiles\FLVER.cs" />

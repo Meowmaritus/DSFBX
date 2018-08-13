@@ -173,6 +173,9 @@ namespace DSFBX_GUI
             Importer.ImportSkeletonPath = 
                 context.Config.ImportSkeletonEnable 
                 ? context.Config.ImportSkeletonPath : null;
+            Importer.IsDoubleSided = context.Config.ImportDoubleSided;
+            Importer.GenerateBackup = context.Config.GenerateBackup;
+            Importer.ImportedSkeletonScalePercent = context.Config.ImportedSkeletonScalePercent;
 
             var success = await Importer.BeginImport();
 
@@ -237,10 +240,7 @@ namespace DSFBX_GUI
         {
             var dlg = new OpenFileDialog()
             {
-                Filter = "Parts/Obj/Chr BND (*.*bnd)|*.*bnd|" +
-                    "Parts BND Files (*.partsbnd)|*.partsbnd|" +
-                    "Object BND Files (*.objbnd)|*.objbnd|" +
-                    "Character BND Files (*.chrbnd)|*.chrbnd",
+                Filter = "All Files (*.*)|*.*",
                 CheckFileExists = true,
                 CheckPathExists = true,
                 Title = "Select Entity BND File..."
@@ -304,10 +304,7 @@ namespace DSFBX_GUI
         {
             var dlg = new OpenFileDialog()
             {
-                Filter = "Parts/Obj/Chr BND (*.*bnd)|*.*bnd|" +
-                    "Parts BND Files (*.partsbnd)|*.partsbnd|" +
-                    "Object BND Files (*.objbnd)|*.objbnd|" +
-                    "Character BND Files (*.chrbnd)|*.chrbnd",
+                Filter = "All Files (*.*)|*.*",
                 CheckFileExists = true,
                 CheckPathExists = true,
                 Title = "Select Entity BND File..."

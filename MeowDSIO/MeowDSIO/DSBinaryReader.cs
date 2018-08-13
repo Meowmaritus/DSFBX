@@ -230,13 +230,12 @@ namespace MeowDSIO
 
         public FlverPackedVector4 ReadFlverPackedVector4()
         {
-            return new FlverPackedVector4()
-            {
-                X = (sbyte)(ReadByte() - 127),
-                Y = (sbyte)(ReadByte() - 127),
-                Z = (sbyte)(ReadByte() - 127),
-                W = (sbyte)(ReadByte() - 127),
-            };
+            return new FlverPackedVector4(
+                ReadByte(),
+                ReadByte(),
+                ReadByte(),
+                ReadByte()
+            );
         }
 
         public double ReadFlverVersion()
@@ -333,6 +332,49 @@ namespace MeowDSIO
             return ReadBytes((int)BaseStream.Length);
         }
 
+
+        public void AssertByte(byte value)
+        {
+            byte b = ReadByte();
+            if (b != value)
+            {
+                throw new InvalidDataException(string.Format(
+                    "Read byte: 0x{0:X} | Expected byte: 0x{1:X}", b, value));
+            }
+        }
+
+        public void AssertBytes(params byte[] values)
+        {
+            foreach (byte value in values)
+            {
+                byte b = ReadByte();
+                if (b != value)
+                {
+                    throw new InvalidDataException(string.Format(
+                        "Read byte: 0x{0:X} | Expected byte: 0x{1:X}", b, value));
+                }
+            }
+        }
+
+        public void AssertInt32(int value)
+        {
+            int i = ReadInt32();
+            if (i != value)
+            {
+                throw new InvalidDataException(string.Format(
+                    "Read int: 0x{0:X} | Expected int: 0x{1:X}", i, value));
+            }
+        }
+
+        public void AssertStringAscii(string value, int length)
+        {
+            string s = ReadStringAscii(length);
+            if (s != value)
+            {
+                throw new InvalidDataException(string.Format(
+                    "Read string: {0} | Expected string: {1}", s, value));
+            }
+        }
 
     }
 }

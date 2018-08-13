@@ -82,36 +82,49 @@ namespace DSFBX.Solvers
 
             //ACTUALY WORKS:
 
-
-            for (int b = 0; b < flver.Bones.Count; b++)
+            if (solveBones)
             {
-                flver.Bones[b].Scale = Vector3.One;
-
-
-                if (flver.Bones[b].Scale.X < 0)
+                for (int b = 0; b < flver.Bones.Count; b++)
                 {
-                    flver.Bones[b].Scale.X *= -1;
-                    flver.Bones[b].EulerRadian.Y += MathHelper.Pi;
+                    flver.Bones[b].Scale = Vector3.One;
 
-                    foreach (var dmy in flver.Dummies.Where(dm => dm.ParentBoneIndex == b))
+
+                    if (flver.Bones[b].Scale.X < 0)
                     {
-                        dmy.Position *= new Vector3(-1, 1, 1);
+                        flver.Bones[b].Scale.X *= -1;
+                        flver.Bones[b].EulerRadian.Y += MathHelper.Pi;
+
+                        foreach (var dmy in flver.Dummies.Where(dm => dm.ParentBoneIndex == b))
+                        {
+                            dmy.Position *= new Vector3(-1, 1, 1);
+                        }
                     }
-                }
 
-                if (flver.Bones[b].Scale.Y < 0)
-                {
-                    flver.Bones[b].Scale.Y *= -1;
-                    flver.Bones[b].EulerRadian.X += MathHelper.Pi;
-
-                    foreach (var dmy in flver.Dummies.Where(dm => dm.ParentBoneIndex == b))
+                    if (flver.Bones[b].Scale.Y < 0)
                     {
-                        dmy.Position *= new Vector3(1, -1, 1);
+                        flver.Bones[b].Scale.Y *= -1;
+                        flver.Bones[b].EulerRadian.X += MathHelper.Pi;
+
+                        foreach (var dmy in flver.Dummies.Where(dm => dm.ParentBoneIndex == b))
+                        {
+                            dmy.Position *= new Vector3(1, -1, 1);
+                        }
                     }
                 }
             }
 
+            
 
+            //foreach (var m in flver.Submeshes)
+            //{
+            //    foreach (var v in m.Vertices)
+            //    {
+            //        var norm = (Vector3)v.Normal;
+            //        var tan = (Vector3)v.BiTangent;
+
+            //        v.BiTangent = new Vector4(Vector3.Cross(norm, tan) * v.BiTangent.W, v.BiTangent.W);
+            //    }
+            //}
 
 
             //}
