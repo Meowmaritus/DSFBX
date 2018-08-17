@@ -10,8 +10,8 @@ namespace MeowDSIO.DataTypes.TPF
     public class TPFEntry : IDisposable
     {
         public string Name { get; set; }
-        public uint FlagsA { get; set; }
-        public uint FlagsB { get; set; }
+        public int FlagsA { get; set; }
+        public int FlagsB { get; set; }
         public byte[] DDSBytes { get; set; }
 
         public TPFEntry()
@@ -19,7 +19,7 @@ namespace MeowDSIO.DataTypes.TPF
 
         }
 
-        public TPFEntry(string Name, uint FlagsA, uint FlagsB, byte[] DDSBytes)
+        public TPFEntry(string Name, int FlagsA, int FlagsB, byte[] DDSBytes)
         {
             this.Name = Name;
             this.FlagsA = FlagsA;

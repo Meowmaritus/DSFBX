@@ -38,14 +38,14 @@ namespace DSFBX.Solvers
 
             newBone.Name = boneContent.Name;
 
-            if (parentIndex == -1 && (boneContent.Name.ToUpper().StartsWith("DUMMY") || boneContent.Name.ToUpper().StartsWith("DYMMY")))
-            {
-                newBone.Name = "dymmy";
-            }
-            else if (parentIndex == -1 && boneContent.Name.ToUpper().StartsWith("SFX"))
-            {
-                newBone.Name = "SFX用";
-            }
+            //if (parentIndex == -1 && (boneContent.Name.ToUpper().StartsWith("DUMMY") || boneContent.Name.ToUpper().StartsWith("DYMMY")))
+            //{
+            //    newBone.Name = "dymmy";
+            //}
+            //else if (parentIndex == -1 && boneContent.Name.ToUpper().StartsWith("SFX"))
+            //{
+            //    newBone.Name = "SFX用";
+            //}
 
             FbxPipeline.Matrix boneTrans_Xna = boneContent.Transform;// * FbxPipeline.Matrix.CreateScale(Importer.FinalScaleMultiplier);
 
@@ -154,9 +154,13 @@ namespace DSFBX.Solvers
 
                 return -1;
             }
-            else if (newBone.Name.StartsWith("[") && newBone.Name.EndsWith("]"))
+            //else if ((newBone.Name.StartsWith("[") && newBone.Name.EndsWith("]")))
+            //{
+            //    newBone.Name = newBone.Name.Substring(1, newBone.Name.Length - 2);
+            //    newBone.IsNub = true;
+            //}
+            else if (newBone.Name.ToUpper().EndsWith("NUB"))
             {
-                newBone.Name = newBone.Name.Substring(1, newBone.Name.Length - 2);
                 newBone.IsNub = true;
             }
 

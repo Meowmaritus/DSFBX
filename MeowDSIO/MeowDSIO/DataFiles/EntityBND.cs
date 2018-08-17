@@ -53,7 +53,7 @@ namespace MeowDSIO.DataFiles
                     Models.Add(new EntityModel());
                 }
 
-                if (entry.ID >= ID_TPF_START && entry.ID <= ID_TPF_END)
+                if (entry.ID == ID_TPF_START + modelIdx)
                 {
                     var tpf = entry.ReadDataAs<TPF>();
                     foreach (var tex in tpf)
@@ -61,35 +61,35 @@ namespace MeowDSIO.DataFiles
                         Models[modelIdx].Textures.Add(tex.Name, tex.GetBytes());
                     }
                 }
-                else if (entry.ID >= ID_FLVER_START && entry.ID <= ID_FLVER_END)
+                else if (entry.ID == ID_FLVER_START + modelIdx)
                 {
                     Models[modelIdx].Mesh = entry.ReadDataAs<FLVER>();
                 }
-                else if (entry.ID >= ID_BodyHKX_START && entry.ID <= ID_BodyHKX_END)
+                else if (entry.ID == ID_BodyHKX_START + modelIdx)
                 {
                     Models[modelIdx].BodyHKX = entry.GetBytes();
                 }
-                else if (entry.ID >= ID_ANIBND_START && entry.ID <= ID_ANIBND_END)
+                else if (entry.ID == ID_ANIBND_START + modelIdx)
                 {
                     //Models[modelIdx].AnimContainer = entry.ReadDataAs<ANIBND>();
                     Models[modelIdx].AnimContainer = entry.ReadDataAs<BND>();
 
                 }
-                else if (entry.ID >= ID_HKXPWV_START && entry.ID <= ID_HKXPWV_END)
+                else if (entry.ID == ID_BSIPWV_START + modelIdx)
                 {
-                    Models[modelIdx].BodyHKX = entry.GetBytes();
+                    Models[modelIdx].BSIPWV = entry.GetBytes();
                 }
-                else if (entry.ID >= ID_BSIPWV_START && entry.ID <= ID_BSIPWV_END)
+                else if (entry.ID == ID_HKXPWV_START + modelIdx)
                 {
-                    Models[modelIdx].BodyHKX = entry.GetBytes();
+                    Models[modelIdx].HKXPWV = entry.GetBytes();
                 }
-                else if (entry.ID >= ID_ClothHKX_START && entry.ID <= ID_ClothHKX_END)
+                else if (entry.ID == ID_ClothHKX_START + modelIdx)
                 {
-                    Models[modelIdx].BodyHKX = entry.GetBytes();
+                    Models[modelIdx].ClothHKX = entry.GetBytes();
                 }
-                else if (entry.ID >= ID_CHRTPFBHD_START && entry.ID <= ID_CHRTPFBHD_END)
+                else if (entry.ID == ID_CHRTPFBHD_START + modelIdx)
                 {
-                    Models[modelIdx].BodyHKX = entry.GetBytes();
+                    Models[modelIdx].CHRTPFBHD = entry.GetBytes();
                 }
                 else
                 {
@@ -124,6 +124,7 @@ namespace MeowDSIO.DataFiles
                         tpf.Add(new DataTypes.TPF.TPFEntry(tex.Key, mdl.TextureFlags[tex.Key], 0, tex.Value));
                     }
                     BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.tpf", null, DataFile.SaveAsBytes(tpf, $"{ShortName}.tpf")));
+                    ID++;
                 }
 
                 ID++;
@@ -134,7 +135,6 @@ namespace MeowDSIO.DataFiles
             {
                 if (mdl.Mesh != null)
                     BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.flver", null, DataFile.SaveAsBytes(mdl.Mesh, $"{ShortName}.flver")));
-
                 ID++;
             }
 
@@ -143,6 +143,7 @@ namespace MeowDSIO.DataFiles
             {
                 if (mdl.BodyHKX != null)
                     BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.hkx", null, mdl.BodyHKX));
+                ID++;
             }
 
             ID = ID_ANIBND_START;
@@ -150,6 +151,7 @@ namespace MeowDSIO.DataFiles
             {
                 if (mdl.AnimContainer != null)
                     BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.anibnd", null, DataFile.SaveAsBytes(mdl.AnimContainer, $"{ShortName}{idx()}.anibnd")));
+                ID++;
             }
 
             ID = ID_HKXPWV_START;
@@ -157,6 +159,7 @@ namespace MeowDSIO.DataFiles
             {
                 if (mdl.HKXPWV != null)
                     BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.hkxpwv", null, mdl.HKXPWV));
+                ID++;
             }
 
             ID = ID_BSIPWV_START;
@@ -164,6 +167,7 @@ namespace MeowDSIO.DataFiles
             {
                 if (mdl.BSIPWV != null)
                     BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.bsipwv", null, mdl.BSIPWV));
+                ID++;
             }
 
             ID = ID_ClothHKX_START;
@@ -171,6 +175,7 @@ namespace MeowDSIO.DataFiles
             {
                 if (mdl.ClothHKX != null)
                     BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}_c.hkx", null, mdl.ClothHKX));
+                ID++;
             }
 
             ID = ID_CHRTPFBHD_START;
@@ -178,6 +183,7 @@ namespace MeowDSIO.DataFiles
             {
                 if (mdl.CHRTPFBHD != null)
                     BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.chrtpfbhd", null, mdl.CHRTPFBHD));
+                ID++;
             }
 
             bin.WriteDataFile(BND, FilePath ?? VirtualUri);

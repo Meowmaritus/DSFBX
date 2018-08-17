@@ -10,7 +10,7 @@ namespace MeowDSIO.DataTypes.EntityBND
     public class EntityModel
     {
         public Dictionary<string, byte[]> Textures { get; set; } = new Dictionary<string, byte[]>();
-        public Dictionary<string, uint> TextureFlags { get; set; } = new Dictionary<string, uint>();
+        public Dictionary<string, int> TextureFlags { get; set; } = new Dictionary<string, int>();
         public DataFiles.FLVER Mesh { get; set; } = null;
         public byte[] BodyHKX { get; set; } = null;
         //public ANIBND AnimContainer { get; set; } = null;

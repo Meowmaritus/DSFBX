@@ -209,7 +209,7 @@ namespace DSFBX
         //    AddAllBoneChildrenAsHitboxes(flver, boneContent, myIndex);
         //}
 
-        bool LoadFbxIntoFlver(NodeContent fbx, FLVER flver)
+        bool LoadFbxIntoFlver(NodeContent fbx, FLVER flver, Dictionary<FlverSubmesh, string> flverSubmeshNameMap)
         {
             var FBX_Bones = new List<NodeContent>();
             var FBX_RootBones = new List<NodeContent>();
@@ -324,6 +324,7 @@ namespace DSFBX
                 }
 
                 flver.Bones = skeletonSourceEntityBnd.Models[0].Mesh.Bones;
+                flver.Dummies = skeletonSourceEntityBnd.Models[0].Mesh.Dummies;
             }
 
             for (int i = 0; i < flver.Bones.Count; i++)
@@ -979,7 +980,10 @@ namespace DSFBX
 
             OrientationSolver.SolveOrientation(flver, ImportSkeletonPath == null);
 
-
+            foreach (var kvp in FBX_Meshes)
+            {
+                flverSubmeshNameMap.Add(kvp.Key, kvp.Value.Name);
+            }
 
             return true;
         }
@@ -1016,7 +1020,9 @@ namespace DSFBX
 
             var flver = new FLVER();
 
-            if (!LoadFbxIntoFlver(fbx, flver))
+            Dictionary<FlverSubmesh, string> flverMeshNameMap = new Dictionary<FlverSubmesh, string>();
+
+            if (!LoadFbxIntoFlver(fbx, flver, flverMeshNameMap))
             {
                 PrintError("Import failed.");
                 return false;
@@ -1149,15 +1155,15 @@ namespace DSFBX
                             ShortName = ShortName.Substring(ShortName.LastIndexOf('\\') + 1);
                             ShortName = ShortName.Substring(0, ShortName.IndexOf('.'));
 
-                            if (entityBnd.Models[EntityModelIndex].Textures.ContainsKey(ShortName))
-                            {
-                                PrintWarning($"Texture '{ShortName}' is referenced by multiple materials in the " +
-                                    $"same entity. Duplicating data so the game can load it properly. Consider " +
-                                    $"reworking the textures to be their own separate maps to prevent redundant" +
-                                    $" data in the future.");
+                            //if (entityBnd.Models[EntityModelIndex].Textures.ContainsKey(ShortName))
+                            //{
+                            //    PrintWarning($"Texture '{ShortName}' is referenced by multiple materials in the " +
+                            //        $"same entity. Duplicating data so the game can load it properly. Consider " +
+                            //        $"reworking the textures to be their own separate maps to prevent redundant" +
+                            //        $" data in the future.");
 
-                                ShortName = Util.GetIncrementedName(ShortName);
-                            }
+                            //    ShortName = Util.GetIncrementedName(ShortName);
+                            //}
 
                             var ddsBytes = File.ReadAllBytes(matParam.Value);
                             if (!entityBnd.Models[EntityModelIndex].Textures.ContainsKey(ShortName))
@@ -1168,23 +1174,24 @@ namespace DSFBX
 
                             if (!entityBnd.Models[EntityModelIndex].TextureFlags.ContainsKey(ShortName))
                             {
-
-                                if (matParam.Name == "g_Diffuse")
-                                {
-                                    entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName, 0x5);
-                                }
-                                else if (matParam.Name == "g_Specular")
-                                {
-                                    entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName, 0x5);
-                                }
-                                else if (matParam.Name == "g_Bumpmap")
-                                {
-                                    entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName, 0x18);
-                                }
-                                else
-                                {
-                                    entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName, 0);
-                                }
+                                entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName, 
+                                    DDSHelper.GetTpfFormatFromDdsBytes(this, ShortName, ddsBytes));
+                                //if (matParam.Name == "g_Diffuse")
+                                //{
+                                //    entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName, 0); //0x5
+                                //}
+                                //else if (matParam.Name == "g_Specular")
+                                //{
+                                //    entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName, 0);//0x5
+                                //}
+                                //else if (matParam.Name == "g_Bumpmap")
+                                //{
+                                //    entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName, 0); //0x18
+                                //}
+                                //else
+                                //{
+                                //    entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName, 0);
+                                //}
 
                             }
                         }
@@ -1233,12 +1240,56 @@ namespace DSFBX
                     d.Position *= (float)(ImportedSkeletonScalePercent / 100);
                 }
 
-                //entityBnd.Models[EntityModelIndex].Mesh.Header = skeletonSourceEntityBnd.Models[0].Mesh.Header;
+                entityBnd.Models[EntityModelIndex].Mesh.Header = skeletonSourceEntityBnd.Models[0].Mesh.Header;
             }
+
+
+            foreach (var kvp in flverMeshNameMap)
+            {
+                var matchingBones = flver.Bones.Where(x => x.Name == kvp.Value);
+                int boneIndex = -1;
+                if (matchingBones.Any())
+                {
+                    boneIndex = flver.Bones.IndexOf(matchingBones.First());
+                }
+                else
+                {
+                    var newMeshBone = new FlverBone(flver)
+                    {
+                        Name = kvp.Value
+                    };
+                    flver.Bones.Add(newMeshBone);
+                    boneIndex = flver.Bones.Count - 1;
+                }
+                kvp.Key.DefaultBoneIndex = boneIndex;
+            }
+
+            var topLevelParentBones = flver.Bones.Where(x => x.ParentIndex == -1).ToArray();
+
+            if (topLevelParentBones.Length > 0)
+            {
+                for (int i = 0; i < topLevelParentBones.Length; i++)
+                {
+                    if (i == 0)
+                        topLevelParentBones[i].PreviousSiblingIndex = -1;
+                    else
+                        topLevelParentBones[i].PreviousSiblingIndex = (short)flver.Bones.IndexOf(topLevelParentBones[i - 1]);
+
+                    if (i == topLevelParentBones.Length - 1)
+                        topLevelParentBones[i].NextSiblingIndex = -1;
+                    else
+                        topLevelParentBones[i].PreviousSiblingIndex = (short)flver.Bones.IndexOf(topLevelParentBones[i + 1]);
+                }
+            }
+            
 
             OnFlverGenerated(entityBnd.Models[EntityModelIndex].Mesh);
 
-            
+            foreach (var entityModel in entityBnd.Models)
+            {
+                //Don't use the separate texture file thing fatcat
+                entityModel.CHRTPFBHD = null;
+            }
 
             if (EntityBndPath.ToUpper().EndsWith(".DCX"))
             {

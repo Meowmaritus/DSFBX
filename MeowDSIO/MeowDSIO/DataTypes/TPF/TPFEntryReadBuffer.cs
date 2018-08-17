@@ -12,24 +12,24 @@ namespace MeowDSIO.DataTypes.TPF
 
         public int Offset;
         public int Size;
-        public uint FlagsA;
-        public uint FlagsB;
+        public int FlagsA;
+        public int FlagsB;
         public int NameOffset;
 
         public TPFEntry ReadNext(DSBinaryReader bin)
         {
             Offset = bin.ReadInt32();
             Size = bin.ReadInt32();
-            FlagsA = bin.ReadUInt32();
+            FlagsA = bin.ReadInt32();
 
             if (TpfFlags == 0x00020300) //Dark Souls
             {
                 NameOffset = bin.ReadInt32();
-                FlagsB = bin.ReadUInt32();
+                FlagsB = bin.ReadInt32();
             }
             else if (TpfFlags == 0x02010200 || TpfFlags == 0x02010000) //Demon's Souls
             {
-                FlagsB = bin.ReadUInt32();
+                FlagsB = bin.ReadInt32();
                 NameOffset = bin.ReadInt32();
             }
 
