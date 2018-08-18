@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="DSFBX.ModelViewer.ModelList" 
+        Title="DSFBX Model Viewer Control Panel"
+        Height="560" Width="320" ShowInTaskbar="True" Top="0" Left="0" MinHeight="256" MinWidth="224" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:DSFBX.ModelViewer" Closing="Window_Closing" Loaded="Window_Loaded">
+  <Grid>
+    <ListView Name="MainListView" Grid.Row="0" >
+            <CheckBox Name="ShowBoneBoxesCheckbox" Content="Show All Bone Bounding Boxes" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click" />
+            <CheckBox Name="ShowDummyDirections" Content="Show Dummy Directional Indicators" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click" />
+            <CheckBox Name="ShowDebugNormals" Content="Draw Normal Vectors (Debug)" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click" />
+            <CheckBox Name="ShowDebugTangents" Content="Draw Tangent Vectors (Debug)" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click" />
+            <Button Name="ButtonToggleAllSubmesh" Content="TOGGLE ALL SUBMESHES" FontWeight="Bold" Click="ButtonToggleAllSubmesh_Click"/>
+            <Button Name="ButtonToggleAllDummy" Content="TOGGLE ALL DUMMY POLYS" FontWeight="Bold" Click="ButtonToggleAllDummy_Click"/>
+            <Button Name="ButtonToggleAllBones" Content="TOGGLE ALL BONES" FontWeight="Bold" Click="ButtonToggleAllBones_Click"/>
+            <Button Name="ButtonRerollDummyColors" Content="REROLL DUMMY COLORS" FontWeight="Bold" Click="ButtonRerollDummyColors_Click"/>
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="DUMMY RADIUS:"
+                    />
+
+                <Slider
+                    Name="SliderDummyRadius" 
+                    Minimum="0" Maximum="10" HorizontalAlignment="Stretch"
+                    Value="1" TickFrequency="1" TickPlacement="Both"
+                    Grid.Column="1"
+                    ValueChanged="Slider_ValueChanged"
+                    />
+            </Grid>
+
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="BONE JOINT RADIUS:"
+                    />
+
+                <Slider
+                    Name="SliderBoneJointRadius" 
+                    Minimum="0" Maximum="10" HorizontalAlignment="Stretch"
+                    Value="1" TickFrequency="1" TickPlacement="Both"
+                    Grid.Column="1"
+                    ValueChanged="Slider_ValueChanged"
+                    />
+            </Grid>
+
+            <Separator />
+
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="GRID SPACING:"
+                    />
+
+                <Slider
+                    Name="SliderGridSpacing" 
+                    Minimum="0" Maximum="5" HorizontalAlignment="Stretch"
+                    Value="1" TickFrequency="1" TickPlacement="Both"
+                    Grid.Column="1"
+                    ValueChanged="Slider_ValueChanged_Grid"
+                    />
+            </Grid>
+
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="GRID SPAN:"
+                    />
+
+                <Slider
+                    Name="SliderGridSpan" 
+                    Minimum="0" Maximum="50" HorizontalAlignment="Stretch"
+                    Value="10" TickFrequency="5" TickPlacement="Both"
+                    IsSnapToTickEnabled="True"
+                    Grid.Column="1"
+                    ValueChanged="Slider_ValueChanged_Grid"
+                    />
+            </Grid>
+
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="GRID OPACITY:"
+                    />
+
+                <Slider
+                    Name="SliderGridOpacity" 
+                    Minimum="0" Maximum="1" HorizontalAlignment="Stretch"
+                    Value="1" TickFrequency="0.1" TickPlacement="Both"
+                    Grid.Column="1"
+                    ValueChanged="Slider_ValueChanged_Grid"
+                    />
+            </Grid>
+        
+            <Separator />
+
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="GAMEPAD TURN SPEED:"
+                    />
+
+                <Slider
+                    Name="SliderJoystickSpeed" 
+                    Minimum="0" Maximum="5" HorizontalAlignment="Stretch"
+                    Value="1" TickFrequency="1" TickPlacement="Both"
+                    Grid.Column="1"
+                    />
+            </Grid>
+
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="MOUSE TURN SPEED:"
+                    />
+
+                <Slider
+                    Name="SliderMouseSpeed" 
+                    Minimum="0" Maximum="5" HorizontalAlignment="Stretch"
+                    Value="1" TickFrequency="1" TickPlacement="Both"
+                    Grid.Column="1"
+                    />
+            </Grid>
+
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="CAM MOVE SPEED:"
+                    />
+
+                <Slider
+                    Name="SliderCamMoveSpeed" 
+                    Minimum="0" Maximum="5" HorizontalAlignment="Stretch"
+                    Value="1" TickFrequency="1" TickPlacement="Both"
+                    Grid.Column="1"
+                    />
+            </Grid>
+
+            <Separator />
+
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="NORMAL SIZE (DEBUG):"
+                    />
+
+                <Slider
+                    Name="SliderDebugNormalLength" 
+                    Minimum="0" Maximum="0.025" HorizontalAlignment="Stretch"
+                    Value="0.005" TickFrequency="0.005" TickPlacement="Both"
+                    Grid.Column="1"
+                    ValueChanged="Slider_ValueChanged"
+                    />
+            </Grid>
+
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="TANGENT SIZE (DEBUG):"
+                    />
+
+                <Slider
+                    Name="SliderDebugTangentLength" 
+                    Minimum="0" Maximum="0.025" HorizontalAlignment="Stretch"
+                    Value="0.005" TickFrequency="0.005" TickPlacement="Both"
+                    Grid.Column="1"
+                    ValueChanged="Slider_ValueChanged"
+                    />
+            </Grid>
+
+            <Separator />
+
+
+        </ListView>
+  </Grid>
+</Window>

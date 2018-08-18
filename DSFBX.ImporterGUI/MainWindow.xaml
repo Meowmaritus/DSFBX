@@ -220,12 +220,12 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Margin="0,206,120,0"
-                Width="221"
+                Width="231"
                 HorizontalContentAlignment="Left"
                 VerticalContentAlignment="Center"
                 IsChecked="{Binding Config.LaunchModelViewerAfterImport}" Height="29"
                 >
-                Launch Model Viewer After Import
+                Send To Model Viewer After Importing
             </CheckBox>
 
             <CheckBox

@@ -7,7 +7,7 @@
     <ProjectGuid>{65F9EA65-1FF1-45BE-AF0D-F47E0AF5E953}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>DSFBX_GUI</RootNamespace>
-    <AssemblyName>DSFBX Import GUI</AssemblyName>
+    <AssemblyName>DSFBX Model Importer</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -23,6 +23,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,9 +36,12 @@
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>DSFBX_GUI.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <HintPath>..\packages\Xna_Content_Pipeline.1.0.0\lib\Microsoft.Xna.Framework.dll</HintPath>
@@ -52,6 +57,9 @@
     </Reference>
     <Reference Include="Microsoft.Xna.Framework.Video, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
       <HintPath>..\packages\Xna_Content_Pipeline.1.0.0\lib\Microsoft.Xna.Framework.Video.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.6.0.1625\lib\net40\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -109,33 +117,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ModelViewer\Content\CJKFont10pt.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ModelViewer\Content\CJKFont12pt.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ModelViewer\Content\CJKFont16x16.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ModelViewer\Content\CJKFont8pt.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ModelViewer\Content\CJKFontMono12pt.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ModelViewer\Content\DebugFont.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ModelViewer\Content\Hud.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ModelViewer\Content\TestFont1.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ModelViewer\DS1MDV.exe.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -146,57 +127,22 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MeowDSIO\MeowDSIO\MeowDSIO.csproj">
-      <Project>{4AD69470-8146-4D20-94F0-DA9844EEE5A2}</Project>
-      <Name>MeowDSIO</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DSFBX.Core\DSFBX.Core.csproj">
       <Project>{f55ed308-5e05-424b-8d45-923bb2271539}</Project>
       <Name>DSFBX.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DSFBX.ModelViewer\DSFBX.ModelViewer.csproj">
+      <Project>{2c9f8fff-c731-468d-81e2-f6e341853083}</Project>
+      <Name>DSFBX.ModelViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MeowDSIO\MeowDSIO\MeowDSIO.csproj">
+      <Project>{4ad69470-8146-4d20-94f0-da9844eee5a2}</Project>
+      <Name>MeowDSIO</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="D3DX9_41.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\DS1MDV.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\MeowDSIO.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\MeowDSIO.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\MonoGame.Framework.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\SharpDX.Direct2D1.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\SharpDX.Direct3D11.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\SharpDX.Direct3D9.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\SharpDX.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\SharpDX.DXGI.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\SharpDX.MediaFoundation.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\SharpDX.XAudio2.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModelViewer\SharpDX.XInput.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="X3DAudio1_7.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -204,4 +150,8 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>del "$(TargetDir)*.xml" /q /f
+del "$(TargetDir)*.config" /q /f</PostBuildEvent>
+  </PropertyGroup>
 </Project>

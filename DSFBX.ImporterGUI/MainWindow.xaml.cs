@@ -27,6 +27,8 @@ namespace DSFBX_GUI
     {
         DSFBXImporter Importer = new DSFBXImporter();
 
+        DSFBX.ModelViewer.MyGame modelViewer = null;
+
         //ScaleTransform paragraphScale = new ScaleTransform(0.74, 0.74);
 
         public MainWindow()
@@ -186,13 +188,30 @@ namespace DSFBX_GUI
             }
             else if (context.Config.LaunchModelViewerAfterImport)
             {
-                System.Diagnostics.Process.Start(GetModelViewerExecutable(), $"\"{context.Config.OutputBND}\"");
+                //System.Diagnostics.Process.Start(GetModelViewerExecutable(), $"\"{context.Config.OutputBND}\"");
+                //DSFBX.ModelViewer.App.Main();
+                //DSFBX.ModelViewer.Program.Main(new string[] { context.Config.OutputBND });
+
+                if (modelViewer != null)
+                {
+                    modelViewer.LoadNewModels(new string[] { context.Config.OutputBND });
+                }
+                else
+                {
+                    modelViewer = new DSFBX.ModelViewer.MyGame();
+                    modelViewer.IsQuickRunFromModelImporter = true;
+                    modelViewer.inputFiles = new string[] { context.Config.OutputBND };
+                    modelViewer.Run(Microsoft.Xna.Framework.GameRunBehavior.Synchronous);
+                }
+
+                
+
             }
         }
 
         private static string GetModelViewerExecutable()
         {
-            return (new FileInfo(typeof(MainWindow).Assembly.Location).DirectoryName) + @"\ModelViewer\DS1MDV.exe";
+            return (new FileInfo(typeof(MainWindow).Assembly.Location).DirectoryName) + @"\DSFBX.ModelViewer.exe";
         }
 
         static readonly char[] pathSep = new char[] { '\\', '/' };
@@ -298,6 +317,12 @@ namespace DSFBX_GUI
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             SaveConfig();
+
+            if (modelViewer != null)
+            {
+                modelViewer.Exit();
+                modelViewer.Dispose();
+            }
         }
 
         private void ButtonSkeletonBrowse_Click(object sender, RoutedEventArgs e)

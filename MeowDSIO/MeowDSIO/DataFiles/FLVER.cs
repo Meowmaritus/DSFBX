@@ -194,7 +194,11 @@ namespace MeowDSIO.DataFiles
 
                 INFO_material.Add((paramCount, paramStartIndex));
 
-                mat.Flags = bin.ReadInt32();
+                mat.UnknownByte1 = bin.ReadByte();
+                mat.UnknownIndexer = bin.ReadByte();
+                mat.UnknownByte3 = bin.ReadByte();
+                mat.UnknownByte4 = bin.ReadByte();
+
                 mat.UnknownInt1 = bin.ReadInt32();
                 mat.UnknownInt2 = bin.ReadInt32();
                 mat.UnknownInt3 = bin.ReadInt32();
@@ -849,7 +853,10 @@ namespace MeowDSIO.DataFiles
                 else
                     bin.Write(-1);
 
-                bin.Write(mat.Flags);
+                bin.Write(mat.UnknownByte1);
+                bin.Write(mat.UnknownIndexer);
+                bin.Write(mat.UnknownByte3);
+                bin.Write(mat.UnknownByte4);
                 bin.Write(mat.UnknownInt1);
                 bin.Write(mat.UnknownInt2);
                 bin.Write(mat.UnknownInt3);

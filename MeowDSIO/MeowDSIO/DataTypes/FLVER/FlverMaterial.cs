@@ -14,7 +14,10 @@ namespace MeowDSIO.DataTypes.FLVER
         public List<FlverMaterialParameter> Parameters { get; set; } 
             = new List<FlverMaterialParameter>();
 
-        public int Flags { get; set; } = 0;
+        public byte UnknownByte1 { get; set; } = 0;
+        public byte UnknownIndexer { get; set; } = 0;
+        public byte UnknownByte3 { get; set; } = 0;
+        public byte UnknownByte4 { get; set; } = 0;
 
         public int UnknownInt1 { get; set; } = 0;
         public int UnknownInt2 { get; set; } = 0;

@@ -14,8 +14,8 @@ namespace MeowDSIO.DataTypes.EntityBND
         public DataFiles.FLVER Mesh { get; set; } = null;
         public byte[] BodyHKX { get; set; } = null;
         //public ANIBND AnimContainer { get; set; } = null;
+        public bool IncludesAnimContainerDummy { get; set; } = false;
         public DataFiles.BND AnimContainer { get; set; } = null;
-        public bool IncludesAnimDummy { get; set; } = false;
         public byte[] HKXPWV { get; set; } = null;
         public byte[] BSIPWV { get; set; } = null;
         public byte[] ClothHKX { get; set; } = null;

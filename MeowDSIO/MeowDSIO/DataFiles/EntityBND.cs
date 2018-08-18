@@ -16,6 +16,17 @@ namespace MeowDSIO.DataFiles
 
         static readonly char[] pathSep = new char[] { '\\', '/' };
 
+        public readonly byte[] ANIM_DUMMY_DATA = new byte[] {
+            0x83, 0x4C, 0x83, 0x83, 0x83, 0x89, 0x83, 0x6F, 0x83, 0x43, 0x83, 0x93, 0x83, 0x68, 0x82, 0xCC, 0x34, 0x30, 0x30, 0x94,
+            0xD4, 0x82, 0xC9, 0x82, 0xB1, 0x82, 0xCC, 0x83, 0x5F, 0x83, 0x7E, 0x81, 0x5B, 0x83, 0x74, 0x83, 0x40, 0x83, 0x43, 0x83,
+            0x8B, 0x82, 0xF0, 0x92, 0xC7, 0x89, 0xC1, 0x82, 0xB5, 0x82, 0xDC, 0x82, 0xB7, 0x81, 0x42, 0x82, 0xB1, 0x82, 0xCC, 0x83,
+            0x74, 0x83, 0x40, 0x83, 0x43, 0x83, 0x8B, 0x82, 0xAA, 0x82, 0xA0, 0x82, 0xE9, 0x82, 0xC6, 0x90, 0xEA, 0x97, 0x70, 0x82,
+            0xCC, 0x45, 0x73, 0x64, 0x83, 0x74, 0x83, 0x40, 0x83, 0x43, 0x83, 0x8B, 0x82, 0xF0, 0x8E, 0x67, 0x97, 0x70, 0x82, 0xB5,
+            0x82, 0xDC, 0x82, 0xB7, 0x81, 0x42
+        };
+
+        public static readonly string ANIM_DUMMY_NAME = "chrbnd.dmy";
+
         public const int ID_TPF_START = 100;
         public const int ID_FLVER_START = 200;
         public const int ID_BodyHKX_START = 300;
@@ -71,9 +82,15 @@ namespace MeowDSIO.DataFiles
                 }
                 else if (entry.ID == ID_ANIBND_START + modelIdx)
                 {
-                    //Models[modelIdx].AnimContainer = entry.ReadDataAs<ANIBND>();
-                    Models[modelIdx].AnimContainer = entry.ReadDataAs<BND>();
-
+                    if (entry.Name.ToUpper().EndsWith(".DMY"))
+                    {
+                        Models[modelIdx].IncludesAnimContainerDummy = true;
+                    }
+                    else
+                    {
+                        //Models[modelIdx].AnimContainer = entry.ReadDataAs<ANIBND>();
+                        Models[modelIdx].AnimContainer = entry.ReadDataAs<BND>();
+                    }
                 }
                 else if (entry.ID == ID_BSIPWV_START + modelIdx)
                 {
@@ -123,7 +140,7 @@ namespace MeowDSIO.DataFiles
                     {
                         tpf.Add(new DataTypes.TPF.TPFEntry(tex.Key, mdl.TextureFlags[tex.Key], 0, tex.Value));
                     }
-                    BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.tpf", null, DataFile.SaveAsBytes(tpf, $"{ShortName}.tpf")));
+                    BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.tpf", null, DataFile.SaveAsBytes(tpf, $"{ShortName}{idx()}.tpf")));
                     ID++;
                 }
 
@@ -134,7 +151,7 @@ namespace MeowDSIO.DataFiles
             foreach (var mdl in Models)
             {
                 if (mdl.Mesh != null)
-                    BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.flver", null, DataFile.SaveAsBytes(mdl.Mesh, $"{ShortName}.flver")));
+                    BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.flver", null, DataFile.SaveAsBytes(mdl.Mesh, $"{ShortName}{idx()}.flver")));
                 ID++;
             }
 
@@ -151,6 +168,8 @@ namespace MeowDSIO.DataFiles
             {
                 if (mdl.AnimContainer != null)
                     BND.Add(new BNDEntry(ID, $"{ShortName}{idx()}.anibnd", null, DataFile.SaveAsBytes(mdl.AnimContainer, $"{ShortName}{idx()}.anibnd")));
+                else if (mdl.IncludesAnimContainerDummy)
+                    BND.Add(new BNDEntry(ID, ANIM_DUMMY_NAME, null, ANIM_DUMMY_DATA));
                 ID++;
             }
 
