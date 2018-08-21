@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DDSHelper.cs" />
+    <Compile Include="DSFBX_Enums.cs" />
     <Compile Include="Solvers\BoneSolver.cs" />
     <Compile Include="DSFBXContentBuildLogger.cs" />
     <Compile Include="DSFBXGenericEventArgs.cs" />
@@ -89,7 +90,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <EmbeddedResource Include="EmbeddedResources\Mtd.mtdbnd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

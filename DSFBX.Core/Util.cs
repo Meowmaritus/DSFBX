@@ -132,8 +132,8 @@ namespace DSFBX
 
         public static Vector3 GetFlverEulerFromQuaternion(Quaternion quat)
         {
-            return QuaternionToEulerAngles(quat);
-            //return QuaternionToEuler_B(quat);
+            //return QuaternionToEulerAngles(quat);
+            return QuaternionToEuler_B(quat);
 
             float xx = quat.X * quat.X;
             float xy = quat.X * quat.Y;

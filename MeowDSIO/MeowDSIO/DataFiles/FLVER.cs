@@ -37,6 +37,21 @@ namespace MeowDSIO.DataFiles
             0xFF, 0xFF, 0x7F, 0xFF,
         };
 
+        public List<string> GetAllUsedTextureNames()
+        {
+            List<string> result = new List<string>();
+            foreach (var sm in Submeshes)
+            {
+                var smTex = sm.GetAllUsedTextureNames();
+                foreach (var t in smTex)
+                {
+                    if (!result.Contains(t))
+                        result.Add(t);
+                }
+            }
+            return result;
+        }
+
         public FlverBone FindBone(string boneName, bool ignoreErrors = false)
         {
             var results = Bones.Where(x => x.Name == boneName).ToList();
@@ -297,7 +312,7 @@ namespace MeowDSIO.DataFiles
                 mesh.UnknownByte7 = bin.ReadByte();
                 mesh.UnknownByte8 = bin.ReadByte();
 
-                mesh.DefaultBoneIndex = bin.ReadInt32();
+                mesh.NameBoneIndex = bin.ReadInt32();
 
                 int boneIndexCount = bin.ReadInt32();
 
@@ -969,7 +984,7 @@ namespace MeowDSIO.DataFiles
                 bin.Write(mesh.UnknownByte7);
                 bin.Write(mesh.UnknownByte8);
 
-                bin.Write(mesh.DefaultBoneIndex);
+                bin.Write(mesh.NameBoneIndex);
                 bin.Write(mesh.BoneIndices.Count);
                 bin.Write(mesh.UnknownInt1);
                 bin.Placeholder($"Submeshes[{i}].BoneIndicesOffset");

@@ -39,6 +39,17 @@ namespace MeowDSIO.DataTypes.FLVER
             return -1;
         }
 
+        public List<string> GetAllUsedTextureNames()
+        {
+            List<string> result = new List<string>();
+            foreach (var mp in Material.Parameters)
+            {
+                if (!result.Contains(mp.Value))
+                    result.Add(MiscUtil.GetFileNameWithoutDirectoryOrExtension(mp.Value));
+            }
+            return result;
+        }
+
         public FlverBone GetBoneFromLocalIndex(int index, bool suppressExceptionForInvalidIndex = false)
         {
             var bones = GetBones().ToList();
@@ -90,7 +101,19 @@ namespace MeowDSIO.DataTypes.FLVER
         public byte UnknownByte7 { get; set; } = 0;
         public byte UnknownByte8 { get; set; } = 0;
 
-        public int DefaultBoneIndex { get; set; } = -1;
+        public int NameBoneIndex { get; set; } = -1;
+
+        public string GetName()
+        {
+            if (NameBoneIndex >= 0 && NameBoneIndex < ContainingFlver.Bones.Count)
+            {
+                return ContainingFlver.Bones[NameBoneIndex].Name;
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         public List<int> BoneIndices { get; set; } = new List<int>();
 

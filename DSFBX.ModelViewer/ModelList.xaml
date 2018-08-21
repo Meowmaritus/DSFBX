@@ -8,10 +8,31 @@
             <CheckBox Name="ShowDummyDirections" Content="Show Dummy Directional Indicators" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click" />
             <CheckBox Name="ShowDebugNormals" Content="Draw Normal Vectors (Debug)" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click" />
             <CheckBox Name="ShowDebugTangents" Content="Draw Tangent Vectors (Debug)" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click" />
+            <CheckBox Name="IsDebugNormalShader" Content="Use Debug Normal Shader" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click_FullMeshRebuild" />
             <Button Name="ButtonToggleAllSubmesh" Content="TOGGLE ALL SUBMESHES" FontWeight="Bold" Click="ButtonToggleAllSubmesh_Click"/>
             <Button Name="ButtonToggleAllDummy" Content="TOGGLE ALL DUMMY POLYS" FontWeight="Bold" Click="ButtonToggleAllDummy_Click"/>
             <Button Name="ButtonToggleAllBones" Content="TOGGLE ALL BONES" FontWeight="Bold" Click="ButtonToggleAllBones_Click"/>
             <Button Name="ButtonRerollDummyColors" Content="REROLL DUMMY COLORS" FontWeight="Bold" Click="ButtonRerollDummyColors_Click"/>
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="MULTI-MESH SPACING:"
+                    />
+
+                <Slider
+                    Name="SliderMultimeshSpacing" 
+                    Minimum="0" Maximum="5" HorizontalAlignment="Stretch"
+                    Value="0" TickFrequency="0.5" TickPlacement="Both"
+                    IsSnapToTickEnabled="True"
+                    Grid.Column="1"
+                    ValueChanged="Checkbox_Click_FullMeshRebuild"
+                    />
+            </Grid>
             <Grid Width="256">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150"/>

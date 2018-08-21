@@ -9,8 +9,8 @@ namespace MeowDSIO.DataTypes.FLVER
 {
     public class FlverUV
     {
-        private ushort u;
-        private ushort v;
+        private short u;
+        private short v;
 
         const float UNIT = 1024;
 
@@ -21,12 +21,12 @@ namespace MeowDSIO.DataTypes.FLVER
             {
                 var newVal = value * UNIT;
 
-                if (newVal > ushort.MaxValue)
-                    newVal = ushort.MaxValue;
-                else if (newVal < ushort.MinValue)
-                    newVal = ushort.MinValue;
+                if (newVal > short.MaxValue)
+                    newVal = short.MaxValue;
+                else if (newVal < short.MinValue)
+                    newVal = short.MinValue;
 
-                u = (ushort)(int)(newVal);
+                u = (short)(int)(newVal);
             }
         }
 
@@ -37,16 +37,16 @@ namespace MeowDSIO.DataTypes.FLVER
             {
                 var newVal = value * UNIT;
 
-                if (newVal > ushort.MaxValue)
-                    newVal = ushort.MaxValue;
-                else if (newVal < ushort.MinValue)
-                    newVal = ushort.MinValue;
+                if (newVal > short.MaxValue)
+                    newVal = short.MaxValue;
+                else if (newVal < short.MinValue)
+                    newVal = short.MinValue;
 
-                v = (ushort)(int)(newVal);
+                v = (short)(int)(newVal);
             }
         }
 
-        public (ushort U, ushort V) GetPacked()
+        public (short U, short V) GetPacked()
         {
             return (u, v);
         }
@@ -56,7 +56,7 @@ namespace MeowDSIO.DataTypes.FLVER
 
         }
 
-        public FlverUV(ushort packedU, ushort packedV)
+        public FlverUV(short packedU, short packedV)
         {
             u = packedU;
             v = packedV;

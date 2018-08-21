@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:DSFBX_GUI"
         mc:Ignorable="d"
         Title="DSFBX" 
-        Width="768"
-        Height="512" 
-        MinWidth="548"
+        Width="960"
+        Height="540" 
+        MinWidth="960"
         MinHeight="400" Closing="Window_Closing"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
@@ -41,16 +41,16 @@
                 Content="FBX to Import:"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="6,21,0,0"
+                Margin="308,14,0,0"
                 FontWeight="Bold"
-                Width="175"
+                Width="97"
                 HorizontalContentAlignment="Right"
                 />
 
             <TextBox
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
-                Margin="182,25,82,0" 
+                Margin="313,40,79,0" 
                 Height="20"
                 Text="{Binding Config.InputFBX}"
                 />
@@ -62,51 +62,43 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Width="64"
-                Margin="0,25,10,0"
+                Margin="0,40,10,0"
                 />
 
             <!--Entity BND-->
             <Label
-                Content="Entity BND to Replace:"
+                Content="Dark Souls PTDE EXE Path:"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="6,53,0,0"
+                Margin="38,6,0,0"
                 FontWeight="Bold" 
                 Width="175"
                 HorizontalContentAlignment="Right"
                 />
 
-            <Label
-                Content="(*.*bnd or *.*bnd.dcx)"
+            <TextBox
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="6,69,0,0" Width="174"
-                HorizontalContentAlignment="Right"
-                />
-
-            <TextBox
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Top"
-                Margin="182,57,82,0" 
+                Margin="38,32,0,0" 
                 Height="20"
-                Text="{Binding Config.OutputBND}"
+                Text="{Binding Config.DarkSoulsExePath}" Width="245"
                 />
 
             <Button
                 x:Name="ButtonOutputBrowse"
                 Click="ButtonOutputBrowse_Click"
                 Content="Browse"
-                HorizontalAlignment="Right"
+                HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Width="64"
-                Margin="0,57,10,0"
+                Margin="218,9,0,0"
                 />
 
             <!--Import Skeleton-->
             <CheckBox
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="19,100,0,0"
+                Margin="19,111,0,0"
                 FontWeight="Bold" 
                 Width="149"
                 HorizontalContentAlignment="Left"
@@ -123,7 +115,7 @@
             <TextBox
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
-                Margin="182,106,82,0" 
+                Margin="182,117,377,0" 
                 Height="20"
                 Text="{Binding Config.ImportSkeletonPath}"
                 IsEnabled="{Binding Config.ImportSkeletonEnable}"
@@ -136,7 +128,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Width="64"
-                Margin="0,106,8,0"
+                Margin="0,117,307,0"
                 IsEnabled="{Binding Config.ImportSkeletonEnable}"
                 />
 
@@ -231,7 +223,7 @@
             <CheckBox
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
-                Margin="0,169,103,0"
+                Margin="0,206,355,0"
                 Width="116"
                 HorizontalContentAlignment="Left"
                 VerticalContentAlignment="Center"
@@ -243,13 +235,39 @@
             <CheckBox
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
-                Margin="0,141,39,0"
-                Width="180"
+                Margin="0,206,482,0"
+                Width="172"
                 HorizontalContentAlignment="Left"
                 VerticalContentAlignment="Center"
                 IsChecked="{Binding Config.ImportDoubleSided}" Height="29"
                 >
                 Import Mesh Double-Sided
+            </CheckBox>
+
+            <CheckBox
+                x:Name="CheckBoxArmorCopyHumanToHollow"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,133,10,0"
+                Width="194"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
+                IsChecked="{Binding Config.ArmorCopyHumanToHollow}" Height="29"
+                >
+                Copy Human -> Hollow
+            </CheckBox>
+
+            <CheckBox
+                x:Name="CheckBoxArmorCopyMaleLegsToFemale"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,161,10,0"
+                Width="194"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
+                IsChecked="{Binding Config.ArmorCopyMaleLegsToFemale}" Height="29"
+                >
+                Copy Male Legs -> Female Legs
             </CheckBox>
 
             <!--Import-->
@@ -268,21 +286,64 @@
                 Content="Scale Percent:"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="378,142,0,0"
+                Margin="373,143,0,0"
                 FontWeight="Bold" 
                 Width="90"
+                HorizontalContentAlignment="Left"
+                />
+
+            <Label
+                Content="Scene Rotation (X Y Z):"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="529,142,0,0"
+                FontWeight="Bold" 
+                Width="143"
                 HorizontalContentAlignment="Left"
                 />
 
             <TextBox
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="468,144,0,0"
-                Width="64"
+                Margin="460,144,0,0"
+                Width="50"
                 Height="24"
                 HorizontalContentAlignment="Right"
                 VerticalContentAlignment="Center"
                 Text="{Binding Config.ScalePercent}"
+                />
+
+            <TextBox
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="540,172,0,0"
+                Width="50"
+                Height="24"
+                HorizontalContentAlignment="Right"
+                VerticalContentAlignment="Center"
+                Text="{Binding Config.SceneRotationX}"
+                />
+
+            <TextBox
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="595,172,0,0"
+                Width="50"
+                Height="24"
+                HorizontalContentAlignment="Right"
+                VerticalContentAlignment="Center"
+                Text="{Binding Config.SceneRotationY}"
+                />
+
+            <TextBox
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="650,173,0,0"
+                Width="50"
+                Height="24"
+                HorizontalContentAlignment="Right"
+                VerticalContentAlignment="Center"
+                Text="{Binding Config.SceneRotationZ}"
                 />
 
             <!--Imported Skeleton Scale Percent-->
@@ -290,7 +351,7 @@
                 Content="Imported Skeleton Scale Percent:"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="270,171,0,0"
+                Margin="266,173,0,0"
                 FontWeight="Bold" 
                 Width="197"
                 HorizontalContentAlignment="Left"
@@ -300,13 +361,48 @@
             <TextBox
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="468,174,0,0"
-                Width="64"
+                Margin="460,174,0,0"
+                Width="50"
                 Height="24"
                 HorizontalContentAlignment="Right"
                 VerticalContentAlignment="Center"
                 Text="{Binding Config.ImportedSkeletonScalePercent}"
                 IsEnabled="{Binding Config.ImportSkeletonEnable}"
+                />
+            <ComboBox x:Name="ModelTypeDropdown" HorizontalAlignment="Right" Margin="0,86,10,0" VerticalAlignment="Top" Width="103" SelectionChanged="ModelTypeDropdown_SelectionChanged">
+                <ListBoxItem x:Name="ModelTypeDropdown_Character" Content="Character"/>
+                <ListBoxItem x:Name="ModelTypeDropdown_Object" Content="Object"/>
+                <ListBoxItem x:Name="ModelTypeDropdown_Armor" Content="Armor"/>
+                <ListBoxItem x:Name="ModelTypeDropdown_Weapon" Content="Weapon"/>
+            </ComboBox>
+
+            <TextBox HorizontalAlignment="Right" Margin="0,114,10,0" VerticalAlignment="Top" Width="103" Text="{Binding Config.EntityModelID}"/>
+            <Label Content="Model Type:" HorizontalAlignment="Right" Margin="0,83,119,0" VerticalAlignment="Top"/>
+            <Label Content="Model ID:" HorizontalAlignment="Right" Margin="0,109,119,0" VerticalAlignment="Top"/>
+            <Label
+                Content="Dark Souls Remastered EXE Path:"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="8,52,0,0"
+                FontWeight="Bold" 
+                Width="205"
+                HorizontalContentAlignment="Right"
+                />
+            <TextBox
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="38,78,0,0" 
+                Height="20"
+                Text="{Binding Config.DarkSoulsRemasteredExePath}" Width="245"
+                />
+            <Button
+                x:Name="ButtonBrowseDS1R"
+                Click="ButtonBrowseDS1R_Click"
+                Content="Browse"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Width="64"
+                Margin="218,55,0,0"
                 />
         </Grid>
 
@@ -324,7 +420,7 @@
             x:Name="TextBoxConsoleOutput"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch" 
-            FontFamily="Segoe UI"
+            FontFamily="Consolas"
             Margin="8,242,10,33" 
             VerticalScrollBarVisibility="Visible"
             IsReadOnly="True" 

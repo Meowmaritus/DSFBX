@@ -46,9 +46,9 @@ namespace DSFBX.Solvers
                         Vector3 v2 = hqVertPositions[i2];
                         Vector3 v3 = hqVertPositions[i3];
 
-                        Vector2 w1 = new Vector2(hqVertUVs[i1].X, 1 - hqVertUVs[i1].Y);
-                        Vector2 w2 = new Vector2(hqVertUVs[i2].X, 1 - hqVertUVs[i2].Y);
-                        Vector2 w3 = new Vector2(hqVertUVs[i3].X, 1 - hqVertUVs[i3].Y);
+                        Vector2 w1 = new Vector2(hqVertUVs[i1].X, hqVertUVs[i1].Y);
+                        Vector2 w2 = new Vector2(hqVertUVs[i2].X, hqVertUVs[i2].Y);
+                        Vector2 w3 = new Vector2(hqVertUVs[i3].X, hqVertUVs[i3].Y);
 
                         float x1 = v2.X - v1.X;
                         float x2 = v3.X - v1.X;

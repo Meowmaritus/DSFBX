@@ -17,14 +17,35 @@ namespace DSFBX
 {
     public class DSFBXImporter
     {
+        public List<string> OutputtedFiles = new List<string>();
+
+        const string TEMP_DIR = "DSFBX_Temp";
+
         public string FbxPath = null;
-        public string EntityBndPath = null;
+
+        public string InterrootDir = null;
+        public bool IsRemaster = false;
+        public DSFBXOutputType OutputType = DSFBXOutputType.Weapon;
+        public int ModelID = 220;
+        public string ModelIDStr
+        {
+            get
+            {
+                return ModelID.ToString("D4");
+            }
+        }
+
         public int EntityModelIndex = 0;
         public double ScalePercent = 100.0;
         public string ImportSkeletonPath = null;
         public bool IsDoubleSided = true;
         public bool GenerateBackup = true;
         public double ImportedSkeletonScalePercent = 100.0;
+        public Vector3 SceneRotation = Vector3.Zero;
+
+
+        public bool ArmorCopyHumanToHollow = true;
+        public bool ArmorCopyMaleLegsToFemale = true;
 
         public string PlaceholderMaterialName = "P_Metal[DSB]";
 
@@ -36,6 +57,8 @@ namespace DSFBX
         public readonly Solvers.NormalSolver NormalSolver;
         public readonly Solvers.OrientationSolver OrientationSolver;
         public readonly Solvers.TangentSolver TangentSolver;
+
+        private MtdBND MTDs;
 
         public DSFBXImporter()
         {
@@ -62,8 +85,6 @@ namespace DSFBX
         {
             lock (_RESOURCE_LOAD_LOCKER)
             {
-                if (MTDs == null)
-                    MTDs = LoadEmbRes("Mtd.mtdbnd", bin => bin.ReadAsDataFile<MtdBND>());
                 if (DSFBX_PLACEHOLDER_DIFFUSE == null)
                     DSFBX_PLACEHOLDER_DIFFUSE =
                         LoadEmbRes("DSFBX_PLACEHOLDER_DIFFUSE.dds", bin => bin.ReadAllBytes());
@@ -146,7 +167,7 @@ namespace DSFBX
 
 
         static object _RESOURCE_LOAD_LOCKER = new object();
-        static MtdBND MTDs;
+        
         static byte[] DSFBX_PLACEHOLDER_DIFFUSE;
         static byte[] DSFBX_PLACEHOLDER_SPECULAR;
         static byte[] DSFBX_PLACEHOLDER_BUMPMAP;
@@ -254,10 +275,6 @@ namespace DSFBX
 
             var topLevelBoneIndices = new List<int>();
 
-            string shortModelName = EntityBndPath;
-            shortModelName = shortModelName.Substring(shortModelName.LastIndexOf('\\') + 1);
-            shortModelName = shortModelName.Substring(0, shortModelName.IndexOf('.'));
-
             var flverRootBoneNameMap = new Dictionary<FlverBone, string>();
 
             if (ImportSkeletonPath == null)
@@ -267,7 +284,7 @@ namespace DSFBX
                 {
                     var nextRootBoneIndex = BoneSolver.SolveBone(flver, fbx, boneContent, -1);
                     topLevelBoneIndices.Add(nextRootBoneIndex);
-                    flver.Bones[nextRootBoneIndex].Name = shortModelName;
+                    //flver.Bones[nextRootBoneIndex].Name = shortModelName;
                     flverRootBoneNameMap.Add(flver.Bones[nextRootBoneIndex], boneContent.Name);
                 }
 
@@ -297,16 +314,16 @@ namespace DSFBX
                     }
                 }
 
-                
+
             }
 
-            if (flver.Bones.Count == 0)
-            {
-                flver.Bones.Add(new FlverBone(flver)
-                {
-                    Name = shortModelName,
-                });
-            }
+            //if (flver.Bones.Count == 0)
+            //{
+            //    flver.Bones.Add(new FlverBone(flver)
+            //    {
+            //        Name = shortModelName,
+            //    });
+            //}
 
             var bonesByName = new Dictionary<string, FlverBone>();
 
@@ -423,99 +440,143 @@ namespace DSFBX
                         }
 
 
-                        var materialOverrides = fbxMesh.Children.Where(x => x.Name.StartsWith("MaterialOverride"));
+                        //var materialOverrides = fbxMesh.Children.Where(x => x.Name.StartsWith("MaterialOverride"));
 
+                        string matName = null;
                         string mtdName = null;
 
                         Dictionary<string, string> matTextures = new Dictionary<string, string>();
 
-                        if (materialOverrides.Any())
-                        {
-                            if (materialOverrides.Count() > 1)
-                            {
-                                PrintWarning($"Mesh '{fbxMesh.Name}' has 2 " +
-                                    $"material override nodes parented to it. Using the first one " +
-                                    $"as the mesh's material and ignoring the material stored in " +
-                                    $"the FBX's geometry data as well as any other material " +
-                                    $"override nodes parented to this mesh.");
-                            }
-                            else
-                            {
-                                Print($"Material override node was found parented to mesh '{fbxMesh.Name}'. " +
-                                "Using this override node as the mesh's material and ignoring the material stored in the FBX's geometry data.");
-                            }
+                        //if (materialOverrides.Any())
+                        //{
+                        //    if (materialOverrides.Count() > 1)
+                        //    {
+                        //        PrintWarning($"Mesh '{fbxMesh.Name}' has 2 " +
+                        //            $"material override nodes parented to it. Using the first one " +
+                        //            $"as the mesh's material and ignoring the material stored in " +
+                        //            $"the FBX's geometry data as well as any other material " +
+                        //            $"override nodes parented to this mesh.");
+                        //    }
+                        //    else
+                        //    {
+                        //        Print($"Material override node was found parented to mesh '{fbxMesh.Name}'. " +
+                        //        "Using this override node as the mesh's material and ignoring the material stored in the FBX's geometry data.");
+                        //    }
 
-                            var matOverride = materialOverrides.First();
+                        //    var matOverride = materialOverrides.First();
 
-                            string matName = Util.GetAngleBracketContents(matOverride.Name);
-                            if (!string.IsNullOrWhiteSpace(matName))
-                            {
-                                mtdName = matName;
-                            }
+                        //    string matName = Util.GetAngleBracketContents(matOverride.Name);
+                        //    if (!string.IsNullOrWhiteSpace(matName))
+                        //    {
+                        //        mtdName = matName;
+                        //    }
 
                             
-                        }
+                        //}
 
-                        if (mtdName == null)
+                        if (geometryContent.Material != null)
                         {
-                            if (geometryContent.Material != null)
+                            string fbxMaterialName = geometryContent.Material.Name;
+
+                            if (!fbxMaterialName.Contains("|"))
                             {
-                                string fbxMaterialName = geometryContent.Material.Name;
-                                if (fbxMaterialName.Contains("#"))
-                                {
-                                    fbxMaterialName = fbxMaterialName.Substring(0, fbxMaterialName.IndexOf('#'));
-                                }
-                                mtdName = fbxMaterialName.Trim() + ".mtd";
+                                PrintWarning("FBX material name " +
+                                    $"for mesh '{fbxMesh.Name}' is using the old format. Material name will be \"DSFBX_Material\"." +
+                                    "To specify your own material name, use this FBX material naming format: " +
+                                    "\"MaterialName | ShaderName\" e.g. " +
+                                    "\"Shiny Metal Chestpiece | P_Metal[DSB]\"");
 
-                                foreach (var texKvp in geometryContent.Material.Textures)
+                                string desiredShaderName = fbxMaterialName.Trim();
+                                if (desiredShaderName.Contains("#"))
                                 {
-                                    if (texKvp.Key == "Texture")
-                                    {
-                                        if (!matTextures.ContainsKey("g_Diffuse"))
-                                        {
-                                            matTextures.Add("g_Diffuse", texKvp.Value.Filename);
-                                        }
-                                    }
-                                    else if (texKvp.Key == "Specular" || texKvp.Key == "SpecularFactor")
-                                    {
-                                        if (!matTextures.ContainsKey("g_Specular"))
-                                        {
-                                            matTextures.Add("g_Specular", texKvp.Value.Filename);
-                                        }
-                                    }
-                                    else if (texKvp.Key == "NormalMap")
-                                    {
-                                        if (!matTextures.ContainsKey("g_Bumpmap"))
-                                        {
-                                            matTextures.Add("g_Bumpmap", texKvp.Value.Filename);
-                                        }
-                                    }
-                                    //TODO: OTHER TEXTURE TYPES
+                                    desiredShaderName = desiredShaderName.Substring(0, desiredShaderName.IndexOf("#")).Trim();
                                 }
 
+                                mtdName = desiredShaderName.Trim() + ".mtd";
+                                matName = null;
                             }
                             else
                             {
-                                mtdName = null;
-                                PrintWarning("No material override nodes nor FBX materials " +
-                                    $"defined at all for mesh '{fbxMesh.Name}'. \n" +
-                                    "Defaulting to placeholder material, " +
-                                    $"'{PlaceholderMaterialName}', with placeholder textures.");
+                                string[] matPart = fbxMaterialName.Split('|')
+                                    .Select(x => x.Trim())
+                                    .ToArray();
+
+                                if (matPart.Length != 2)
+                                {
+                                    PrintWarning("Invalid FBX material name " +
+                                    $"defined for mesh '{fbxMesh.Name}'. \n" +
+                                    "Material names must be in this format: " +
+                                    "\"MaterialName | ShaderName\" e.g. " +
+                                    "\"Shiny Metal Chestpiece | P_Metal[DSB]\"\n\n" +
+                                    "Defaulting to placeholder material " +
+                                    $"with '{PlaceholderMaterialName}' shader and placeholder textures.");
+                                    mtdName = null;
+                                    matName = null;
+                                }
+                                else
+                                {
+                                    matName = matPart[0];
+                                    mtdName = matPart[1] + ".mtd";
+                                }
                             }
+
+                            foreach (var texKvp in geometryContent.Material.Textures)
+                            {
+                                if (texKvp.Key == "Texture")
+                                {
+                                    if (!matTextures.ContainsKey("g_Diffuse"))
+                                    {
+                                        matTextures.Add("g_Diffuse", texKvp.Value.Filename);
+                                    }
+                                }
+                                else if (!IsRemaster && (texKvp.Key == "Specular" || texKvp.Key == "SpecularFactor"))
+                                {
+                                    if (!matTextures.ContainsKey("g_Specular"))
+                                    {
+                                        matTextures.Add("g_Specular", texKvp.Value.Filename);
+                                    }
+                                }
+                                else if (texKvp.Key == "NormalMap")
+                                {
+                                    if (!matTextures.ContainsKey("g_Bumpmap"))
+                                    {
+                                        matTextures.Add("g_Bumpmap", texKvp.Value.Filename);
+                                    }
+                                }
+                                else if (IsRemaster && (texKvp.Key == "Reflection"))
+                                {
+                                    if (!matTextures.ContainsKey("g_Specular"))
+                                    {
+                                        matTextures.Add("g_Specular", texKvp.Value.Filename);
+                                    }
+                                }
+                                //TODO: OTHER TEXTURE TYPES
+                            }
+
+                        }
+                        else
+                        {
+                            matName = null;
+                            mtdName = null;
+                            PrintWarning("No FBX material " +
+                                $"defined for mesh '{fbxMesh.Name}'. \n" +
+                                "Defaulting to " +
+                                $"'{PlaceholderMaterialName}', with placeholder textures.");
                         }
 
                         if (mtdName == null)
                         {
                             flverMesh.Material = new FlverMaterial()
                             {
-                                Name = "DSFBX_Placeholder"
+                                Name = "DSFBX_Placeholder",
+                                MTDName = "DSFBX_Placeholder"
                             };
                         }
                         else if (MTDs.ContainsKey(mtdName))
                         {
                             flverMesh.Material = new FlverMaterial()
                             {
-                                Name = "DSFBX_Material_",
+                                Name = matName ?? "DSFBX_Material_",
                                 MTDName = mtdName
                             };
 
@@ -533,7 +594,9 @@ namespace DSFBX
                                 else
                                 {
                                     newMatParam.Value = "";
-                                    missingTextures.Add(extParam.Name);
+                                    //TODO: Check if this causes issues for mats that se g_DetailBump in vanilla
+                                    if (extParam.Name != "g_DetailBumpmap")
+                                        missingTextures.Add(extParam.Name);
                                 }
                             }
 
@@ -554,19 +617,20 @@ namespace DSFBX
                         else
                         {
                             PrintWarning($"The material assigned to " +
-                                $"mesh '{fbxMesh.Name}' is named " +
+                                $"mesh '{fbxMesh.Name}' has " +
                                 $"'{mtdName.Substring(0, mtdName.Length - 4)/*Remove .mtd*/}'" +
-                                $", which is not a valid " +
-                                $"ingame material name.\nDefaulting to " +
-                                $"placeholder material, '{PlaceholderMaterialName}'.");
+                                $"as the shader name, which is not a valid " +
+                                $"ingame shader name.\nDefaulting to " +
+                                $"'{PlaceholderMaterialName}'.");
 
                             flverMesh.Material = new FlverMaterial()
                             {
-                                Name = "DSFBX_Placeholder"
+                                Name = matName ?? "DSFBX_Placeholder",
+                                MTDName = "DSFBX_Placeholder"
                             };
                         }
 
-                        if (flverMesh.Material != null && flverMesh.Material.MTDName != null)
+                        if (flverMesh.Material != null && flverMesh.Material.MTDName != null && flverMesh.Material.MTDName != "DSFBX_Placeholder")
                         {
                             foreach (var extParam in MTDs[flverMesh.Material.MTDName].ExternalParams)
                             {
@@ -631,34 +695,12 @@ namespace DSFBX
                                 for (int i = 0; i < flverMesh.Vertices.Count; i++)
                                 {
                                     var channelValue = (FbxPipeline.Vector3)(channel[i]);
+                                    var normalRotMatrix = FbxPipeline.Matrix.CreateRotationX(-MathHelper.PiOver2);
+                                    var normalInputVector = new FbxPipeline.Vector3(-channelValue.X, channelValue.Y, channelValue.Z);
 
-                                    //var euler = Util.GetEuler(fbxMesh.AbsoluteTransform);
-
-
-                                    var rotatedNormal = 
-                                        FbxPipeline.Vector3.TransformNormal(
-                                        new FbxPipeline.Vector3(-channelValue.X, channelValue.Y, channelValue.Z)
-                                        , //fbxMesh.Transform
-                                          //* FbxPipeline.Matrix.CreateScale(FinalScaleMultiplier)
-                                          // 
-                                          // *
-                                          // 
-
-                                        fbxMesh.AbsoluteTransform * FbxPipeline.Matrix.CreateScale(FinalScaleMultiplier)
-                                        //FbxPipeline.Matrix.Identity
-                                        // * FbxPipeline.Matrix.CreateRotationX(-MathHelper.Pi)
-
-
-                                        // * FbxPipeline.Matrix.CreateRotationX(-MathHelper.Pi)
-                                        // * FbxPipeline.Matrix.CreateRotationX(MathHelper.Pi)
-
+                                    FbxPipeline.Vector3 rotatedNormal = FbxPipeline.Vector3.Normalize(
+                                        FbxPipeline.Vector3.TransformNormal(normalInputVector, normalRotMatrix)
                                         );
-
-                                    rotatedNormal = FbxPipeline.Vector3.Normalize(rotatedNormal);
-
-                                    //DEBUG TEST
-                                    //rotatedNormal = new FbxPipeline.Vector3(0, 0, 1);
-                                    ////////////
 
                                     flverMesh.Vertices[i].Normal = new FlverPackedVector4()
                                     {
@@ -869,7 +911,7 @@ namespace DSFBX
                     }
                 }
 
-                if (bonesReferencedByThisMesh.Count == 0)
+                if (bonesReferencedByThisMesh.Count == 0 && flver.Bones.Count > 0)
                 {
                     bonesReferencedByThisMesh.Add(flver.Bones[0]);
                 }
@@ -916,27 +958,15 @@ namespace DSFBX
                     submeshVertexHighQualityBasePositions,
                     submeshVertexHighQualityBaseUVs);
 
+                for (int i = 0; i < flverMesh.Vertices.Count; i++)
+                {
+                    Vector3 thingy = Vector3.Normalize(Vector3.Cross(submeshHighQualityNormals[i],
+                       new Vector3(submeshHighQualityTangents[i].X,
+                       submeshHighQualityTangents[i].Y,
+                       submeshHighQualityTangents[i].Z) * submeshHighQualityTangents[i].W));
 
-
-                //for (int i = 0; i < flverMesh.Vertices.Count; i++)
-                //{
-                //    Vector3 thingy = Vector3.Cross(submeshHighQualityNormals[i],
-                //        new Vector3(submeshHighQualityTangents[i].X,
-                //        submeshHighQualityTangents[i].Y,
-                //        submeshHighQualityTangents[i].Z));
-
-                //    //Vector3 thingy = Vector3.Normalize(new Vector3(submeshHighQualityTangents[i].X, submeshHighQualityTangents[i].Y, submeshHighQualityTangents[i].Z));
-
-                //    //var transThingy = FbxPipeline.Vector3.Transform(new FbxPipeline.Vector3(thingy.X, thingy.Y, thingy.Z),
-                //    //    FbxPipeline.Matrix.CreateRotationZ(MathHelper.PiOver2));
-
-                //    //transThingy = FbxPipeline.Vector3.Normalize(transThingy);
-
-                //    flverMesh.Vertices[i].BiTangent = new Vector4(thingy.X, thingy.Y, thingy.Z, 0);
-
-                //    //DEBUG TEST//
-                //    //flverMesh.Vertices[i].BiTangent = new Vector4(0, 0, 1, 1);
-                //}
+                    flverMesh.Vertices[i].BiTangent = new Vector4(thingy.X, thingy.Y, thingy.Z, submeshHighQualityTangents[i].W);
+                }
 
                 //Because vertices are homogenous, a simple check of the very first one should work just fine
                 structLayoutChecker.ApplyCheck(flverMesh.Vertices[0]);
@@ -962,16 +992,16 @@ namespace DSFBX
                     VertexSize = actualStructLayout.GetVertexSize(),
                 });
 
-                if (flverMesh.DefaultBoneIndex < 0)
+                if (flverMesh.NameBoneIndex < 0)
                 {
                     var defaultBone = flver.FindBone(fbxMesh.Name, ignoreErrors: true);
                     if (defaultBone != null)
                     {
-                        flverMesh.DefaultBoneIndex = flver.Bones.IndexOf(defaultBone);
+                        flverMesh.NameBoneIndex = flver.Bones.IndexOf(defaultBone);
                     }
                     else
                     {
-                        flverMesh.DefaultBoneIndex = -1;
+                        flverMesh.NameBoneIndex = -1;
                     }
                 }
 
@@ -988,29 +1018,64 @@ namespace DSFBX
             return true;
         }
 
-        
-
-        public bool Import()
+        private bool ImportToSpecificEntityBND(string EntityBndPath)
         {
-            CheckResourceLoad();
-
             EntityBND entityBnd = null;
 
-            if (EntityBndPath.ToUpper().EndsWith(".DCX"))
+            if (IsRemaster)
             {
-                entityBnd = DataFile.LoadFromDcxFile<EntityBND>(EntityBndPath);
+                if (!File.Exists(EntityBndPath))
+                {
+                    Print($"Entity file \"{EntityBndPath}\" did not exist. Creating a new empty model...");
+                    entityBnd = new EntityBND();
+                    entityBnd.FilePath = EntityBndPath;
+                    while (entityBnd.Models.Count <= EntityModelIndex)
+                        entityBnd.Models.Add(new MeowDSIO.DataTypes.EntityBND.EntityModel());
+                    DataFile.SaveToDcxFile(entityBnd, EntityBndPath);
+                }
+                else
+                {
+                    entityBnd = DataFile.LoadFromDcxFile<EntityBND>(EntityBndPath);
+                }
+
+                
             }
             else
             {
-                entityBnd = DataFile.LoadFromFile<EntityBND>(EntityBndPath);
+                if (!File.Exists(EntityBndPath))
+                {
+                    Print($"Entity file \"{EntityBndPath}\" did not exist. Creating a new empty model...");
+                    entityBnd = new EntityBND();
+                    entityBnd.FilePath = EntityBndPath;
+                    while (entityBnd.Models.Count <= EntityModelIndex)
+                        entityBnd.Models.Add(new MeowDSIO.DataTypes.EntityBND.EntityModel());
+                    DataFile.SaveToFile(entityBnd, EntityBndPath);
+                }
+                else
+                {
+                    entityBnd = DataFile.LoadFromFile<EntityBND>(EntityBndPath);
+                }
+
+                
+            }
+
+            if (GenerateBackup)
+            {
+                if (!File.Exists(EntityBndPath + ".bak"))
+                {
+                    File.Copy(EntityBndPath, EntityBndPath + ".bak");
+                    Print($"Generated backup of \"{EntityBndPath}\".");
+                }
             }
 
             if (entityBnd.Models.Count <= EntityModelIndex)
             {
-                PrintError($"Entity Model BND '{EntityBndPath}' " +
+                PrintError($"Entity Model BND \"{EntityBndPath}\" " +
                     $"does not include a model with index {EntityModelIndex}.");
                 return false;
             }
+
+            Print($"Importing FBX into entity \"{EntityBndPath}\"...\n");
 
             var fbxImporter = new Microsoft.Xna.Framework.Content.Pipeline.FbxImporter();
             var context = new DSFBXContentImporterContext();
@@ -1032,7 +1097,7 @@ namespace DSFBX
             shortModelName = shortModelName.Substring(shortModelName.LastIndexOf('\\') + 1);
             shortModelName = shortModelName.Substring(0, shortModelName.IndexOf('.'));
 
-            
+
             var rootBones = flver.Bones.Where(x => x.Name.ToUpper() == "ROOT").ToList();
 
             int rootBoneIndex = 0;
@@ -1072,7 +1137,7 @@ namespace DSFBX
             //flver.Dummies.Clear();
             //flver.Bones.Clear();
             //// TEST ////
-            
+
 
             //flver.Bones.Add(new FlverBone(flver)
             //{
@@ -1082,68 +1147,63 @@ namespace DSFBX
 
             entityBnd.Models[EntityModelIndex].Mesh = flver;
 
-            entityBnd.Models[EntityModelIndex].Textures.Clear();
+            entityBnd.Models[EntityModelIndex].Textures = new Dictionary<string, byte[]>();
+            entityBnd.Models[EntityModelIndex].TextureFlags = new Dictionary<string, int>();
 
             foreach (var submesh in flver.Submeshes)
             {
-                if (submesh.Material.MTDName == null)
+                if (submesh.Material.MTDName == "DSFBX_Placeholder")
                 {
-                    if (submesh.Material.Name == "DSFBX_Placeholder")
+                    submesh.Material.MTDName = "P_Metal[DSB].mtd";
+
+                    string placeholderName = $"{shortModelName.Replace('.', '_')}_DSFBX_Placeholder";
+
+                    while (entityBnd.Models[EntityModelIndex].Textures.ContainsKey(placeholderName)
+                        || entityBnd.Models[EntityModelIndex].Textures.ContainsKey(placeholderName + "_n")
+                        || entityBnd.Models[EntityModelIndex].Textures.ContainsKey(placeholderName + "_s")
+
+                        || entityBnd.Models[EntityModelIndex].TextureFlags.ContainsKey(placeholderName)
+                        || entityBnd.Models[EntityModelIndex].TextureFlags.ContainsKey(placeholderName + "_n")
+                        || entityBnd.Models[EntityModelIndex].TextureFlags.ContainsKey(placeholderName + "_s")
+                        )
                     {
-                        submesh.Material.MTDName = "P_Metal[DSB].mtd";
-
-                        string placeholderName = $"{shortModelName.Replace('.', '_')}_DSFBX_Placeholder";
-
-                        while (entityBnd.Models[EntityModelIndex].Textures.ContainsKey(placeholderName)
-                            || entityBnd.Models[EntityModelIndex].Textures.ContainsKey(placeholderName + "_n")
-                            || entityBnd.Models[EntityModelIndex].Textures.ContainsKey(placeholderName + "_s")
-
-                            || entityBnd.Models[EntityModelIndex].TextureFlags.ContainsKey(placeholderName)
-                            || entityBnd.Models[EntityModelIndex].TextureFlags.ContainsKey(placeholderName + "_n")
-                            || entityBnd.Models[EntityModelIndex].TextureFlags.ContainsKey(placeholderName + "_s")
-                            )
-                        {
-                            placeholderName = Util.GetIncrementedName(placeholderName);
-                        }
-
-                        entityBnd.Models[EntityModelIndex].Textures.Add(placeholderName, DSFBX_PLACEHOLDER_DIFFUSE);
-                        entityBnd.Models[EntityModelIndex].Textures.Add(placeholderName + "_n", DSFBX_PLACEHOLDER_BUMPMAP);
-                        entityBnd.Models[EntityModelIndex].Textures.Add(placeholderName + "_s", DSFBX_PLACEHOLDER_SPECULAR);
-
-                        entityBnd.Models[EntityModelIndex].TextureFlags.Add(placeholderName, 0);
-                        entityBnd.Models[EntityModelIndex].TextureFlags.Add(placeholderName + "_n", 0);
-                        entityBnd.Models[EntityModelIndex].TextureFlags.Add(placeholderName + "_s", 0);
-
-                        submesh.Material.Parameters = new List<FlverMaterialParameter>();
-
-                        submesh.Material.Parameters.Add(new FlverMaterialParameter()
-                        {
-                            Name = "g_Diffuse",
-                            Value = placeholderName
-                        });
-
-                        submesh.Material.Parameters.Add(new FlverMaterialParameter()
-                        {
-                            Name = "g_Specular",
-                            Value = placeholderName + "_s"
-                        });
-
-                        submesh.Material.Parameters.Add(new FlverMaterialParameter()
-                        {
-                            Name = "g_Bumpmap",
-                            Value = placeholderName + "_n"
-                        });
-
-                        submesh.Material.Parameters.Add(new FlverMaterialParameter()
-                        {
-                            Name = "g_DetailBumpmap",
-                            Value = ""
-                        });
+                        placeholderName = Util.GetIncrementedName(placeholderName);
                     }
-                    else
+
+                    entityBnd.Models[EntityModelIndex].Textures.Add(placeholderName, DSFBX_PLACEHOLDER_DIFFUSE);
+                    entityBnd.Models[EntityModelIndex].Textures.Add(placeholderName + "_n", DSFBX_PLACEHOLDER_BUMPMAP);
+                    entityBnd.Models[EntityModelIndex].Textures.Add(placeholderName + "_s", DSFBX_PLACEHOLDER_SPECULAR);
+
+                    entityBnd.Models[EntityModelIndex].TextureFlags.Add(placeholderName, 0);
+                    entityBnd.Models[EntityModelIndex].TextureFlags.Add(placeholderName + "_n", 0);
+                    entityBnd.Models[EntityModelIndex].TextureFlags.Add(placeholderName + "_s", 0);
+
+                    submesh.Material.Parameters = new List<FlverMaterialParameter>();
+
+                    submesh.Material.Parameters.Add(new FlverMaterialParameter()
                     {
-                        throw new Exception("Material was null but a placeholder material did not take its place!");
-                    }
+                        Name = "g_Diffuse",
+                        Value = placeholderName
+                    });
+
+                    submesh.Material.Parameters.Add(new FlverMaterialParameter()
+                    {
+                        Name = "g_Specular",
+                        Value = placeholderName + "_s"
+                    });
+
+                    submesh.Material.Parameters.Add(new FlverMaterialParameter()
+                    {
+                        Name = "g_Bumpmap",
+                        Value = placeholderName + "_n"
+                    });
+
+                    submesh.Material.Parameters.Add(new FlverMaterialParameter()
+                    {
+                        Name = "g_DetailBumpmap",
+                        Value = ""
+                    });
+
                 }
                 else
                 {
@@ -1174,7 +1234,7 @@ namespace DSFBX
 
                             if (!entityBnd.Models[EntityModelIndex].TextureFlags.ContainsKey(ShortName))
                             {
-                                entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName, 
+                                entityBnd.Models[EntityModelIndex].TextureFlags.Add(ShortName,
                                     DDSHelper.GetTpfFormatFromDdsBytes(this, ShortName, ddsBytes));
                                 //if (matParam.Name == "g_Diffuse")
                                 //{
@@ -1202,7 +1262,7 @@ namespace DSFBX
                         //}
                     }
                 }
-                
+
             }
 
             if (ImportSkeletonPath != null)
@@ -1261,7 +1321,7 @@ namespace DSFBX
                     flver.Bones.Add(newMeshBone);
                     boneIndex = flver.Bones.Count - 1;
                 }
-                kvp.Key.DefaultBoneIndex = boneIndex;
+                kvp.Key.NameBoneIndex = boneIndex;
             }
 
             var topLevelParentBones = flver.Bones.Where(x => x.ParentIndex == -1).ToArray();
@@ -1281,7 +1341,6 @@ namespace DSFBX
                         topLevelParentBones[i].PreviousSiblingIndex = (short)flver.Bones.IndexOf(topLevelParentBones[i + 1]);
                 }
             }
-            
 
             OnFlverGenerated(entityBnd.Models[EntityModelIndex].Mesh);
 
@@ -1291,7 +1350,7 @@ namespace DSFBX
                 entityModel.CHRTPFBHD = null;
             }
 
-            if (EntityBndPath.ToUpper().EndsWith(".DCX"))
+            if (IsRemaster)
             {
                 DataFile.ResaveDcx(entityBnd);
             }
@@ -1300,7 +1359,278 @@ namespace DSFBX
                 DataFile.Resave(entityBnd);
             }
 
-            Print("\n\nImport complete.");
+            return true;
+        }
+
+        private string GetModelPath(string modelName)
+        {
+            if (modelName.StartsWith("c"))
+            {
+                return Util.Frankenpath(InterrootDir, "chr", modelName + ".chrbnd" + (IsRemaster ? ".dcx" : ""));
+            }
+            else if (modelName.StartsWith("o"))
+            {
+                return Util.Frankenpath(InterrootDir, "obj", modelName + ".objbnd" + (IsRemaster ? ".dcx" : ""));
+            }
+            else if (
+                modelName.StartsWith("AM_") ||
+                modelName.StartsWith("BD_") ||
+                modelName.StartsWith("LG_") ||
+                modelName.StartsWith("HD_") ||
+                modelName.StartsWith("FG_") ||
+                modelName.StartsWith("FC_") ||
+                modelName.StartsWith("HR_") ||
+                modelName.StartsWith("WP_")
+                )
+            {
+                return Util.Frankenpath(InterrootDir, "parts", modelName + ".partsbnd" + (IsRemaster ? ".dcx" : ""));
+            }
+            else if (modelName.StartsWith("DSFBX_Armor_"))
+            {
+                return Util.Frankenpath(TEMP_DIR, modelName + ".partsbnd" + (IsRemaster ? ".dcx" : ""));
+            }
+            else
+            {
+                PrintError($"DSFBX Internal Error: Tried to save to invalid model name \"{modelName}\" ");
+                return null;
+            }
+        }
+
+        private string GetArmorModelName(DSFBXArmorSlot slot)
+        {
+            switch (slot)
+            {
+                case DSFBXArmorSlot.HD_A: return $"HD_A_{ModelIDStr}";
+                case DSFBXArmorSlot.HD_M: return $"HD_M_{ModelIDStr}";
+                case DSFBXArmorSlot.HD_F: return $"HD_F_{ModelIDStr}";
+                case DSFBXArmorSlot.BD_A: return $"BD_A_{ModelIDStr}";
+                case DSFBXArmorSlot.BD_M: return $"BD_M_{ModelIDStr}";
+                case DSFBXArmorSlot.BD_F: return $"BD_F_{ModelIDStr}";
+                case DSFBXArmorSlot.AM_A: return $"AM_A_{ModelIDStr}";
+                case DSFBXArmorSlot.AM_M: return $"AM_M_{ModelIDStr}";
+                case DSFBXArmorSlot.AM_F: return $"AM_F_{ModelIDStr}";
+                case DSFBXArmorSlot.LG_A: return $"LG_A_{ModelIDStr}";
+                case DSFBXArmorSlot.LG_M: return $"LG_M_{ModelIDStr}";
+                case DSFBXArmorSlot.LG_F: return $"LG_F_{ModelIDStr}";
+                case DSFBXArmorSlot.HD_A_Hollow: return $"HD_A_{ModelIDStr}_M";
+                case DSFBXArmorSlot.HD_M_Hollow: return $"HD_M_{ModelIDStr}_M";
+                case DSFBXArmorSlot.HD_F_Hollow: return $"HD_F_{ModelIDStr}_M";
+                case DSFBXArmorSlot.BD_A_Hollow: return $"BD_A_{ModelIDStr}_M";
+                case DSFBXArmorSlot.BD_M_Hollow: return $"BD_M_{ModelIDStr}_M";
+                case DSFBXArmorSlot.BD_F_Hollow: return $"BD_F_{ModelIDStr}_M";
+                case DSFBXArmorSlot.AM_A_Hollow: return $"AM_A_{ModelIDStr}_M";
+                case DSFBXArmorSlot.AM_M_Hollow: return $"AM_M_{ModelIDStr}_M";
+                case DSFBXArmorSlot.AM_F_Hollow: return $"AM_F_{ModelIDStr}_M";
+                case DSFBXArmorSlot.LG_A_Hollow: return $"LG_A_{ModelIDStr}_M";
+                case DSFBXArmorSlot.LG_M_Hollow: return $"LG_M_{ModelIDStr}_M";
+                case DSFBXArmorSlot.LG_F_Hollow: return $"LG_F_{ModelIDStr}_M";
+            }
+            return null;
+        }
+
+        public bool Import()
+        {
+            CheckResourceLoad();
+
+            string mtdPath = Util.Frankenpath(InterrootDir, "mtd\\Mtd.mtdbnd" + (IsRemaster ? ".dcx" : ""));
+
+            Print($"Loading material definitions from \"{mtdPath}\"...");
+
+            if (IsRemaster)
+            {
+                MTDs = DataFile.LoadFromDcxFile<MtdBND>(mtdPath);
+            }
+            else
+            {
+                MTDs = DataFile.LoadFromFile<MtdBND>(mtdPath);
+            }
+
+            Print($"Loaded {MTDs.Entries.Count} material definitions.\n");
+
+            if (!Directory.Exists(TEMP_DIR))
+            {
+                Directory.CreateDirectory(TEMP_DIR);
+                Print($"Temp directory \"{TEMP_DIR}\" did not exist and was generated.\n");
+            }
+            else
+            {
+                var tempFiles = Directory.GetFiles(TEMP_DIR);
+                foreach (var f in tempFiles)
+                {
+                    File.Delete(f);
+                }
+                Print($"Contents of temp directory \"{TEMP_DIR}\" were cleared.\n");
+            }
+
+            switch (OutputType)
+            {
+                case DSFBXOutputType.Armor:
+                    var tempModelPath = GetModelPath($"DSFBX_Armor_{ModelIDStr}");
+
+                    Print($"Importing base armor model to temporary file \"{tempModelPath}\"...\n");
+
+                    ImportToSpecificEntityBND(tempModelPath);
+                    EntityBND entityBnd = null;
+                    if (IsRemaster)
+                    {
+                        entityBnd = DataFile.LoadFromDcxFile<EntityBND>(tempModelPath);
+                    }
+                    else
+                    {
+                        entityBnd = DataFile.LoadFromFile<EntityBND>(tempModelPath);
+                    }
+
+                    var armorSubmeshes = new Dictionary<DSFBXArmorSlot, List<FlverSubmesh>>();
+                    var copyOfTextureDict = new Dictionary<string, byte[]>();
+
+                    foreach (var kvp in entityBnd.Models[EntityModelIndex].Textures)
+                    {
+                        copyOfTextureDict.Add(kvp.Key, kvp.Value);
+                    }
+
+                    foreach (var sm in entityBnd.Models[EntityModelIndex].Mesh.Submeshes)
+                    {
+                        var name = sm.GetName();
+                        if (name.Contains("|"))
+                        {
+                            var splitName = name.Split('|');
+                            if (splitName.Length == 2)
+                            {
+                                if (Enum.TryParse(splitName[0], out DSFBXArmorSlot armorSlotType))
+                                {
+                                    if (!armorSubmeshes.ContainsKey(armorSlotType))
+                                        armorSubmeshes.Add(armorSlotType, new List<FlverSubmesh>());
+
+                                    armorSubmeshes[armorSlotType].Add(sm);
+                                }
+                                else
+                                {
+                                    PrintError($"Invalid armor slot type specified in submesh name: \"{splitName[0]}\". Submesh name in question: \"{name}\"");
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                PrintError($"Invalid armor submesh name formatting in submesh \"{name}\". Format is \"Slot | Mesh Name\" e.g. \"BD_A | body1\" ");
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            PrintError($"Invalid armor submesh name formatting in submesh \"{name}\". Format is \"Slot | Mesh Name\" e.g. \"BD_A | body1\" ");
+                            return false;
+                        }
+                    }
+
+                    foreach (var kvp in armorSubmeshes)
+                    {
+                        var outputBnd = GetModelPath(GetArmorModelName(kvp.Key));
+                        entityBnd.FilePath = outputBnd;
+                        if (GenerateBackup && (File.Exists(outputBnd) && !File.Exists(outputBnd + ".bak")))
+                        {
+                            File.Copy(outputBnd, outputBnd + ".bak");
+                            Print($"Generated backup of \"{outputBnd}\".");
+                        }
+
+                        entityBnd.Models[EntityModelIndex].Mesh.Submeshes = kvp.Value;
+
+                        var texList = entityBnd.Models[EntityModelIndex].Mesh.GetAllUsedTextureNames();
+
+                        entityBnd.Models[EntityModelIndex].Textures = copyOfTextureDict
+                            .Where(x => texList.Contains(x.Key))
+                            .ToDictionary(x => x.Key, x => x.Value);
+
+                        if (IsRemaster)
+                        {
+                            DataFile.SaveToDcxFile(entityBnd, outputBnd);
+                        }
+                        else
+                        {
+                            DataFile.SaveToFile(entityBnd, outputBnd);
+                        }
+                        OutputtedFiles.Add(outputBnd);
+
+                        Print($"Saved armor slot {kvp.Key.ToString()} model to armor model \"{outputBnd}\".");
+
+                        if (ArmorCopyHumanToHollow && !GetArmorModelName(kvp.Key).EndsWith("_M"))
+                        {
+                            entityBnd.FilePath = outputBnd = GetModelPath(GetArmorModelName(kvp.Key) + "_M");
+                            if (IsRemaster)
+                            {
+                                DataFile.SaveToDcxFile(entityBnd, outputBnd);
+                            }
+                            else
+                            {
+                                DataFile.SaveToFile(entityBnd, outputBnd);
+                            }
+                            OutputtedFiles.Add(outputBnd);
+
+                            Print($"[Copy Human -> Hollow]\nSaved armor slot {kvp.Key.ToString()} model to armor model \"{outputBnd}\".");
+                        }
+
+                        if (ArmorCopyMaleLegsToFemale && kvp.Key == DSFBXArmorSlot.LG_M)
+                        {
+                            entityBnd.FilePath = outputBnd = GetModelPath(GetArmorModelName(DSFBXArmorSlot.LG_F));
+                            if (IsRemaster)
+                            {
+                                DataFile.SaveToDcxFile(entityBnd, outputBnd);
+                            }
+                            else
+                            {
+                                DataFile.SaveToFile(entityBnd, outputBnd);
+                            }
+                            OutputtedFiles.Add(outputBnd);
+
+                            Print($"[Copy Male Legs -> Female Legs]\nSaved armor slot {kvp.Key.ToString()} model to armor model \"{outputBnd}\".");
+
+                            if (ArmorCopyHumanToHollow)
+                            {
+                                entityBnd.FilePath = outputBnd = GetModelPath(GetArmorModelName(DSFBXArmorSlot.LG_F_Hollow));
+                                if (IsRemaster)
+                                {
+                                    DataFile.SaveToDcxFile(entityBnd, outputBnd);
+                                }
+                                else
+                                {
+                                    DataFile.SaveToFile(entityBnd, outputBnd);
+                                }
+                                OutputtedFiles.Add(outputBnd);
+
+                                Print($"[Copy Male Legs -> Female Legs & Copy Human -> Hollow]\nSaved armor slot {kvp.Key.ToString()} model to armor model \"{outputBnd}\".");
+                            }
+                        }
+
+
+                    }
+
+                    break;
+                case DSFBXOutputType.Character:
+                    ImportToSpecificEntityBND(GetModelPath($"c{ModelIDStr}"));
+                    OutputtedFiles.Add(GetModelPath($"c{ModelIDStr}"));
+                    break;
+                case DSFBXOutputType.Object:
+                    ImportToSpecificEntityBND(GetModelPath($"o{ModelIDStr}"));
+                    OutputtedFiles.Add(GetModelPath($"o{ModelIDStr}"));
+                    break;
+                case DSFBXOutputType.Weapon:
+                    ImportToSpecificEntityBND(GetModelPath($"WP_A_{ModelIDStr}"));
+                    OutputtedFiles.Add(GetModelPath($"WP_A_{ModelIDStr}"));
+                    break;
+            }
+
+            if (Directory.Exists(TEMP_DIR))
+            {
+                var tempFiles = Directory.GetFiles(TEMP_DIR);
+                foreach (var f in tempFiles)
+                {
+                    File.Delete(f);
+                }
+                Print($"Contents of temp directory \"{TEMP_DIR}\" were cleared.");
+                Directory.Delete(TEMP_DIR);
+                Print($"Temp directory \"{TEMP_DIR}\" deleted.");
+            }
+
+            Print("\n\nImport complete.\n\n\n\n");
 
             return true;
         }
@@ -1311,10 +1641,10 @@ namespace DSFBX
             {
                 OnImportStarted();
 
-                if (GenerateBackup && !File.Exists(EntityBndPath + ".bak"))
-                {
-                    File.Copy(EntityBndPath, EntityBndPath + ".bak");
-                }
+                //if (GenerateBackup && !File.Exists(EntityBndPath + ".bak"))
+                //{
+                //    File.Copy(EntityBndPath, EntityBndPath + ".bak");
+                //}
 
                 bool isSuccess = false;
 
@@ -1326,13 +1656,13 @@ namespace DSFBX
                 {
                     PrintError($"Exception encountered while attempting to import:\n\n{ex}");
 
-                    if (File.Exists(EntityBndPath + ".bak"))
-                        File.Copy(EntityBndPath + ".bak", EntityBndPath, true);
-                    else
-                        PrintError("Unfortunately, the automatically-generated " +
-                            "backup file was mysteriously gone and you are now most likely left " +
-                            "with an empty entity BND file (please notify me, " +
-                            "Meowmaritus, if you ever see this error message).");
+                    //if (File.Exists(EntityBndPath + ".bak"))
+                    //    File.Copy(EntityBndPath + ".bak", EntityBndPath, true);
+                    //else
+                    //    PrintError("Unfortunately, the automatically-generated " +
+                    //        "backup file was mysteriously gone and you are now most likely left " +
+                    //        "with an empty entity BND file (please notify me, " +
+                    //        "Meowmaritus, if you ever see this error message).");
                 }
 
                 OnImportEnding();

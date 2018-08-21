@@ -22,6 +22,7 @@ namespace DSFBX.ModelViewer
         private List<object> DefaultModelListXamlGeneratedComponents = new List<object>();
 
         public bool RequestExit = false;
+        public event EventHandler CheckChangedOrSomething_FullMeshRebuild;
         public event EventHandler CheckChangedOrSomething;
         public event EventHandler CheckChangedOrSomething_Grid;
         //public event EventHandler DummySizeChanged;
@@ -30,6 +31,15 @@ namespace DSFBX.ModelViewer
         private void CheckChangeEvent()
         {
             EventHandler handler = this.CheckChangedOrSomething;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        private void CheckChangeEvent_FullMeshRebuild()
+        {
+            EventHandler handler = this.CheckChangedOrSomething_FullMeshRebuild;
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);
@@ -79,6 +89,7 @@ namespace DSFBX.ModelViewer
 
         public List<string> BoneNames = new List<string>();
         public List<string> SubmeshNames = new List<string>();
+        public List<string> SubmeshMaterialNames = new List<string>();
         public List<FlverVector3> BoneScales = new List<FlverVector3>();
         public List<int> BoneIndents = new List<int>();
 
@@ -150,14 +161,25 @@ namespace DSFBX.ModelViewer
 
             for (int i = 0; i < this.NumSubmeshes; i++)
             {
+                var meshTb = new TextBlock();
+
+                meshTb.Inlines.Add(new System.Windows.Documents.Run()
+                {
+                    Text = SubmeshNames[i] ?? $"(Submesh #{(i + 1)})",
+                    FontWeight = FontWeights.Bold,
+                });
+
+                meshTb.Inlines.Add(new System.Windows.Documents.Run()
+                {
+                    Text = "  " + (SubmeshMaterialNames[i] ?? $"(No Material Assigned)"),
+                    Foreground = SystemColors.ControlDarkDarkBrush
+                });
+
                 CheckBox c = new CheckBox()
                 {
                     IsThreeState = false,
                     IsChecked = true,
-                    Content = new TextBlock()
-                    {
-                        Text = SubmeshNames[i] ?? $"(Submesh #{(i + 1)})",
-                    }
+                    Content = meshTb,
                 };
                 c.Click += Checkbox_Click;
                 this.MainListView.Items.Add(c);
@@ -255,6 +277,14 @@ namespace DSFBX.ModelViewer
                 return;
 
             this.CheckChangeEvent();
+        }
+
+        private void Checkbox_Click_FullMeshRebuild(object sender, RoutedEventArgs e)
+        {
+            if (TEMPORARILY_DISABLE_EVENTS_FATCAT)
+                return;
+
+            this.CheckChangeEvent_FullMeshRebuild();
         }
 
         public void UpdateDummyColors()

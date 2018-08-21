@@ -70,6 +70,7 @@ namespace MeowDSIO.DataFiles
                     foreach (var tex in tpf)
                     {
                         Models[modelIdx].Textures.Add(tex.Name, tex.GetBytes());
+                        Models[modelIdx].TextureFlags.Add(tex.Name, tex.FlagsA);
                     }
                 }
                 else if (entry.ID == ID_FLVER_START + modelIdx)

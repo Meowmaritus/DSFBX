@@ -13,9 +13,9 @@ namespace MeowDSIO.DataTypes.BND
 
         public const int Signature_ByteLength = 0x08;
         public const string Signature_Default = "07D7R6";
-        public string Signature { get; set; }
+        public string Signature { get; set; } = Signature_Default;
 
-        public byte Format { get; set; }
+        public byte Format { get; set; } = 0x74;
         public bool IsBigEndian_Maybe { get; set; }
         public bool IsPS3_Maybe { get; set; }
         public byte UnkFlag01 { get; set; }

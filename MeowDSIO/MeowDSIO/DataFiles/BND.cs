@@ -14,6 +14,13 @@ namespace MeowDSIO.DataFiles
         public List<BNDEntry> Entries = new List<BNDEntry>();
         public BNDHeader Header { get; set; } = new BNDHeader();
 
+        public BND()
+        {
+            Header.Format = 0x74;
+            Header.BndVersion = BndVersion.BND3;
+            Header.Signature = BNDHeader.Signature_Default;
+        }
+
         public void AddEntry(int id, string name, byte[] data, int? unknown1 = null)
         {
             Entries.Add(new BNDEntry(id, name, unknown1, data));

@@ -218,8 +218,8 @@ namespace MeowDSIO
 
         public FlverUV ReadFlverUV()
         {
-            ushort u = ReadUInt16();
-            ushort v = ReadUInt16();
+            short u = ReadInt16();
+            short v = ReadInt16();
             return new FlverUV(u, v);
         }
 

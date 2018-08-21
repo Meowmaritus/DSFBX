@@ -129,6 +129,28 @@ namespace DSFBX.ModelViewer
                 }
             }
 
+            if (ModelListWindow != null)
+            {
+                if (ModelListWindow.IsDebugNormalShader.IsChecked == true)
+                {
+                    if (!inputFiles.Contains(@"Content\WP_A_0221.partsbnd"))
+                    {
+                        Array.Resize(ref inputFiles, inputFiles.Length + 1);
+                        inputFiles[inputFiles.Length - 1] = @"Content\WP_A_0221.partsbnd";
+                    }
+                }
+                else
+                {
+                    if (inputFiles.Contains(@"Content\WP_A_0221.partsbnd"))
+                    {
+                        var newInputFiles = inputFiles.ToList();
+                        newInputFiles.Remove(@"Content\WP_A_0221.partsbnd");
+                        inputFiles = newInputFiles.ToArray();
+                    }
+                }
+                
+            }
+
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //FONT = Content.Load<SpriteFont>("FONT");
@@ -231,38 +253,40 @@ namespace DSFBX.ModelViewer
         {
             primitiveDatas[f] = new VertexPositionColorNormalTangent[flvers[f].Submeshes.Count][];
 
-            flverBoneParentMatrices = new List<Matrix>();
-            flverBoneColors = new List<Color>();
-
-            Matrix GetParentBoneMatrix(FlverBone bone)
-            {
-                FlverBone parent = bone;
-
-                var boneParentMatrix = Matrix.Identity;
-
-                do
-                {
-                    if (parent != null)
-                    {
-                        boneParentMatrix *= Matrix.CreateScale(parent.Scale);
-                        boneParentMatrix *= Matrix.CreateRotationX(parent.EulerRadian.X);
-                        boneParentMatrix *= Matrix.CreateRotationZ(parent.EulerRadian.Z);
-                        boneParentMatrix *= Matrix.CreateRotationY(parent.EulerRadian.Y);
-                        boneParentMatrix *= Matrix.CreateTranslation(parent.Translation);
-
-                        parent = parent.GetParent();
-                    }
-
-
-                }
-                while (parent != null);
-
-                return boneParentMatrix;
-            }
+            
 
             //List<Matrix> flverBoneParentMatrices_BeforeLinkedBones = new List<Matrix>();
             if (f == 0)
             {
+                flverBoneParentMatrices = new List<Matrix>();
+                flverBoneColors = new List<Color>();
+
+                Matrix GetParentBoneMatrix(FlverBone bone)
+                {
+                    FlverBone parent = bone;
+
+                    var boneParentMatrix = Matrix.Identity;
+
+                    do
+                    {
+                        if (parent != null)
+                        {
+                            boneParentMatrix *= Matrix.CreateScale(parent.Scale);
+                            boneParentMatrix *= Matrix.CreateRotationX(parent.EulerRadian.X);
+                            boneParentMatrix *= Matrix.CreateRotationZ(parent.EulerRadian.Z);
+                            boneParentMatrix *= Matrix.CreateRotationY(parent.EulerRadian.Y);
+                            boneParentMatrix *= Matrix.CreateTranslation(parent.Translation);
+
+                            parent = parent.GetParent();
+                        }
+
+
+                    }
+                    while (parent != null);
+
+                    return boneParentMatrix;
+                }
+
                 for (int i = 0; i < flvers[f].Bones.Count; i++)
                 {
                     flverBoneParentMatrices.Add(GetParentBoneMatrix(flvers[f].Bones[i]));
@@ -271,15 +295,27 @@ namespace DSFBX.ModelViewer
 
                 ModelListWindow.NumSubmeshes = flvers[f].Submeshes.Count;
                 ModelListWindow.SubmeshNames = new List<string>();
+                ModelListWindow.SubmeshMaterialNames = new List<string>();
+
                 foreach (var sm in flvers[f].Submeshes)
                 {
-                    if (sm.DefaultBoneIndex >= 0 && sm.DefaultBoneIndex < flvers[f].Bones.Count)
+                    if (sm.NameBoneIndex >= 0 && sm.NameBoneIndex < flvers[f].Bones.Count)
                     {
-                        ModelListWindow.SubmeshNames.Add(flvers[f].Bones[sm.DefaultBoneIndex].Name);
+                        ModelListWindow.SubmeshNames.Add(flvers[f].Bones[sm.NameBoneIndex].Name);
                     }
                     else
                     {
                         ModelListWindow.SubmeshNames.Add(null);
+                    }
+
+                    if (sm.Material != null)
+                    {
+                        ModelListWindow.SubmeshMaterialNames.Add($"{sm.Material.Name}" +
+                            $" | {MiscUtil.GetFileNameWithoutDirectoryOrExtension(sm.Material.MTDName)}");
+                    }
+                    else
+                    {
+                        ModelListWindow.SubmeshMaterialNames.Add(null);
                     }
                 }
 
@@ -363,19 +399,38 @@ namespace DSFBX.ModelViewer
 
                     primitiveDatas[f][i][j] = new VertexPositionColorNormalTangent();
 
-                    primitiveDatas[f][i][j].Position = vert.Position;
+                    primitiveDatas[f][i][j].Position = vert.Position + new Vector3(f * (float)ModelListWindow.SliderMultimeshSpacing.Value, 0, 0);
 
                     if (vert.Position.Y > MAX_VERTEX_Y)
                         MAX_VERTEX_Y = vert.Position.Y;
 
-                    if (vert.Normal != null)
-                    {
-                        primitiveDatas[f][i][j].Normal = Vector3.Normalize((Vector3)vert.Normal);
-                    }
+
+
+                    
 
                     //primitiveDatas[f][i][j].Color = new Vector4((Vector3)vert.Normal, 1);
 
-                    primitiveDatas[f][i][j].Color = new Vector4(0.66f, 0.66f, 0.66f, 1);
+                    if (ModelListWindow.IsDebugNormalShader.IsChecked == true)
+                    {
+                        primitiveDatas[f][i][j].Color = new Vector4(
+                            (vert.Normal.X * 0.25f) + 0.25f, 
+                            (vert.Normal.Y * 0.25f) + 0.25f, 
+                            (vert.Normal.Z * 0.25f) + 0.25f, 
+                            1);
+
+                        primitiveDatas[f][i][j].Normal = Vector3.Forward;
+                    }
+                    else
+                    {
+                        primitiveDatas[f][i][j].Color = new Vector4(0.75f, 0.75f, 0.75f, 1);
+
+                        if (vert.Normal != null)
+                        {
+                            primitiveDatas[f][i][j].Normal = Vector3.Normalize((Vector3)vert.Normal);
+                        }
+                    }
+
+                    
 
                     //if (vert.VertexColor != null)
                     //{
@@ -444,6 +499,7 @@ namespace DSFBX.ModelViewer
             {
                 ModelListWindow.CheckChangedOrSomething += ModelListWindow_CheckChangedOrSomething;
                 ModelListWindow.CheckChangedOrSomething_Grid += ModelListWindow_CheckChangedOrSomething_Grid;
+                ModelListWindow.CheckChangedOrSomething_FullMeshRebuild += ModelListWindow_CheckChangedOrSomething_FullMeshRebuild;
                 ModelListWindow.RandomizedDummyColors += ModelListWindow_RandomizedDummyColors;
             }
 
@@ -452,6 +508,12 @@ namespace DSFBX.ModelViewer
             ModelListWindow.Show();
         }
 
+        private void ModelListWindow_CheckChangedOrSomething_FullMeshRebuild(object sender, EventArgs e)
+        {
+            IS_CURRENTLY_REBUILDING_ENTIRE_MESH_FATCAT = true;
+        }
+
+        private bool IS_CURRENTLY_REBUILDING_ENTIRE_MESH_FATCAT = false;
         private bool IS_CURRENTLY_UPDATING_HITBOXES_FATCAT = false;
         private bool IS_CURRENTLY_UPDATING_GRID_FATCAT = false;
 
@@ -486,6 +548,12 @@ namespace DSFBX.ModelViewer
 
         private void Draw3D()
         {
+            if (IS_CURRENTLY_REBUILDING_ENTIRE_MESH_FATCAT)
+            {
+                LoadContent();
+                IS_CURRENTLY_REBUILDING_ENTIRE_MESH_FATCAT = false;
+            }
+
             var basicEffect = new BasicEffect(GraphicsDevice);
 
             // Transform your model to place it somewhere in the world
@@ -548,32 +616,51 @@ namespace DSFBX.ModelViewer
 
             basicEffect.VertexColorEnabled = true;
 
-            basicEffect.LightingEnabled = true;
+            if (ModelListWindow.IsDebugNormalShader.IsChecked == true)
+            {
+                basicEffect.LightingEnabled = false;
+                basicEffect.AmbientLightColor = Vector3.One;
+                basicEffect.DirectionalLight0.Enabled = false;
+                basicEffect.DirectionalLight1.Enabled = false;
+                basicEffect.DirectionalLight2.Enabled = false;
+                basicEffect.SpecularPower = 0;
+                basicEffect.SpecularColor = Vector3.One;
+                basicEffect.EmissiveColor = Vector3.One;
+                basicEffect.DiffuseColor = Vector3.One;
+            }
+            else
+            {
+                basicEffect.LightingEnabled = true;
 
-            basicEffect.EnableDefaultLighting();
+                basicEffect.EnableDefaultLighting();
+
+                basicEffect.AmbientLightColor *= 0.66f;
+
+                basicEffect.DirectionalLight0.Direction = Vector3.Transform(Vector3.Forward,
+                    Matrix.CreateRotationY(lightRotation.Y)
+                    * Matrix.CreateRotationZ(lightRotation.Z)
+                    * Matrix.CreateRotationX(lightRotation.X)
+                    );
+
+                basicEffect.DirectionalLight0.DiffuseColor *= 0.66f;
+                basicEffect.DirectionalLight0.SpecularColor *= 0.15f;
+
+                //basicEffect.DirectionalLight1.DiffuseColor *= 0.25f;
+                //basicEffect.DirectionalLight1.SpecularColor *= 0.25f;
+
+                //basicEffect.DirectionalLight2.DiffuseColor *= 0.25f;
+                //basicEffect.DirectionalLight2.SpecularColor *= 0.25f;
+
+                basicEffect.DirectionalLight0.Enabled = true;
+                basicEffect.DirectionalLight1.Enabled = false;
+                basicEffect.DirectionalLight2.Enabled = false;
+            }
+
+            
 
             basicEffect.TextureEnabled = false;
 
-            basicEffect.AmbientLightColor *= 0.66f;
-
-            basicEffect.DirectionalLight0.Direction = Vector3.Transform(Vector3.Forward,
-                Matrix.CreateRotationY(lightRotation.Y)
-                * Matrix.CreateRotationZ(lightRotation.Z)
-                * Matrix.CreateRotationX(lightRotation.X)
-                );
-
-            basicEffect.DirectionalLight0.DiffuseColor *= 0.66f;
-            basicEffect.DirectionalLight0.SpecularColor *= 0.15f;
-
-            //basicEffect.DirectionalLight1.DiffuseColor *= 0.25f;
-            //basicEffect.DirectionalLight1.SpecularColor *= 0.25f;
-
-            //basicEffect.DirectionalLight2.DiffuseColor *= 0.25f;
-            //basicEffect.DirectionalLight2.SpecularColor *= 0.25f;
-
-            basicEffect.DirectionalLight0.Enabled = true;
-            basicEffect.DirectionalLight1.Enabled = false;
-            basicEffect.DirectionalLight2.Enabled = false;
+            
 
             // I'm setting this so that *both* sides of your triangle are drawn
             // (so it won't be back-face culled if you move it, or the camera around behind it)
@@ -581,14 +668,86 @@ namespace DSFBX.ModelViewer
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            basicEffect.DirectionalLight1.Enabled = true;
-
             // Render with a BasicEffect that was created in LoadContent
             // (BasicEffect only has one pass - but effects in general can have many rendering passes)
             foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
             {
                 // This is the all-important line that sets the effect, and all of its settings, on the graphics device
                 pass.Apply();
+
+                //if (ModelListWindow.IsDebugNormalShader.IsChecked == true)
+                //{
+                //    var debugNormalStacks = 20;
+                //    var debugNormalSlices = 20;
+                //    var debugNormalRadius = 0.1f;
+
+                //    var debugNormalPrimitives = new VertexPositionColor[(debugNormalSlices + 1) * (debugNormalStacks + 1)];
+
+                //    float phi, theta;
+                //    float dphi = MathHelper.Pi / debugNormalStacks;
+                //    float dtheta = MathHelper.TwoPi / debugNormalSlices;
+                //    float x, y, z, sc;
+                //    int index = 0;
+
+                //    for (int stack = 0; stack <= debugNormalStacks; stack++)
+                //    {
+                //        phi = MathHelper.PiOver2 - stack * dphi;
+                //        y = debugNormalRadius * (float)Math.Sin(phi);
+                //        sc = -debugNormalRadius * (float)Math.Cos(phi);
+
+                //        for (int slice = 0; slice <= debugNormalSlices; slice++)
+                //        {
+                //            theta = slice * dtheta;
+                //            x = sc * (float)Math.Sin(theta);
+                //            z = sc * (float)Math.Cos(theta);
+                //            var normal = Vector3.Normalize(new Vector3(-x, y, z));
+                //            debugNormalPrimitives[index++] = new VertexPositionColor(new Vector3(x + cameraPositionDefault.Z, y, z),
+                //                new Color((normal.X * 0.25f) + 0.25f, (normal.Y * 0.25f) + 0.25f, (normal.Z * 0.25f) + 0.25f));
+                //        }
+                //    }
+
+                //    var debugNormalIndices = new int[debugNormalSlices * debugNormalStacks * 6];
+                //    index = 0;
+                //    int k = debugNormalSlices + 1;
+
+                //    for (int stack = 0; stack < debugNormalStacks; stack++)
+                //    {
+                //        for (int slice = 0; slice < debugNormalSlices; slice++)
+                //        {
+                //            debugNormalIndices[index++] = (stack + 0) * k + slice;
+                //            debugNormalIndices[index++] = (stack + 1) * k + slice;
+                //            debugNormalIndices[index++] = (stack + 0) * k + slice + 1;
+
+                //            debugNormalIndices[index++] = (stack + 0) * k + slice + 1;
+                //            debugNormalIndices[index++] = (stack + 1) * k + slice;
+                //            debugNormalIndices[index++] = (stack + 1) * k + slice + 1;
+                //        }
+                //    }
+
+                //    VertexBuffer v = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), debugNormalPrimitives.Length, BufferUsage.None);
+
+                //    v.SetData(debugNormalPrimitives);
+
+                //    GraphicsDevice.SetVertexBuffer(v);
+
+                //    IndexBuffer lineListIndexBuffer = new IndexBuffer(
+                //                GraphicsDevice,
+                //                IndexElementSize.ThirtyTwoBits,
+                //                sizeof(int) * debugNormalIndices.Length,
+                //                BufferUsage.None);
+
+                //    lineListIndexBuffer.SetData(debugNormalIndices);
+
+                //    GraphicsDevice.Indices = lineListIndexBuffer;
+
+                //    GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, debugNormalIndices.Length / 3);
+
+                //    lineListIndexBuffer.Dispose();
+
+
+                //    v.Dispose();
+
+                //}
 
                 for (int f = 0; f < flvers.Length; f++)
                 {
@@ -1258,12 +1417,20 @@ namespace DSFBX.ModelViewer
                     //    AddCapsule(hit.Position, Vector3.One * HIT_SPHERE_RADIUS, Vector3.Zero, dmyColorMapping[hit.TypeID]);
                     //}
 
-                    AddCapsule(hit.Position, Vector3.One * HIT_SPHERE_RADIUS * (float)ModelListWindow.SliderDummyRadius.Value, Vector3.Zero, dmyColorMapping[hit.TypeID]);
+                    var bonifiedHitPosition = hit.Position;
+
+                    if (hit.ParentBoneIndex >= 0 && hit.ParentBoneIndex < flvers[0].Bones.Count)
+                    {
+                        var parentBoneMatrix = flverBoneParentMatrices[hit.ParentBoneIndex];
+                        bonifiedHitPosition = Vector3.Transform(bonifiedHitPosition, parentBoneMatrix);
+                    }
+
+                    AddCapsule(bonifiedHitPosition, Vector3.One * HIT_SPHERE_RADIUS * (float)ModelListWindow.SliderDummyRadius.Value, Vector3.Zero, dmyColorMapping[hit.TypeID]);
 
                     if (ModelListWindow.ShowDummyDirectionalIndicators)
                     {
-                        AddLine(hit.Position, hit.Position + hit.Row2, dmyColorMapping[hit.TypeID], Matrix.Identity);
-                        AddLine(hit.Position, hit.Position + hit.Row3, dmyColorMapping[hit.TypeID], Matrix.Identity);
+                        AddLine(bonifiedHitPosition, hit.Position + hit.Row2, dmyColorMapping[hit.TypeID], Matrix.Identity);
+                        AddLine(bonifiedHitPosition, hit.Position + hit.Row3, dmyColorMapping[hit.TypeID], Matrix.Identity);
                     }
                     //AddLine(hit.Position, hit.Position + hit.Row2, Color.Red, Matrix.Identity);
                     //AddLine(hit.Position, hit.Position + hit.Row3, Color.Red, Matrix.Identity);
@@ -1300,6 +1467,8 @@ namespace DSFBX.ModelViewer
                 //AddCapsule(bonePos, Vector3.One *  0.1f, Vector3.Zero, Color.Red);
                 
                 float scale = ((Vector3)(bone.Translation)).Length() * 0.75f;
+
+                
                 ////float scale = boneParentMatrix.Translation.Length();
                 ////float scale = ((Vector3)(bone.GetParent()?.Translation ?? Vector3.One)).Length();
 
@@ -1315,19 +1484,21 @@ namespace DSFBX.ModelViewer
 
                 if (bone.BoundingBoxMax != null && bone.BoundingBoxMin != null)
                 {
-                    //if (!foundChildScale)
-                    //{
-                    var bbLen = ((Vector3)(bone.BoundingBoxMax)).Length();
+                    ////if (!foundChildScale)
+                    ////{
+                    //var bbLen = ((Vector3)(bone.BoundingBoxMax - bone.BoundingBoxMin)).Length();
 
-                    if (bbLen > 0.001f)
-                        scale = bbLen * 0.5f;
-                    //}
+                    //if (bbLen > 0.001f)
+                    //    scale = bbLen * 0.25f;
+                    ////}
 
                     if (boneDrawState == null || ModelListWindow.ShowBoneBoxes)
                     {
                         AddBoundingBox(bone.BoundingBoxMin, bone.BoundingBoxMax, boneParentMatrix, Color.White, Color.White);
                     }
                 }
+
+
 
                 if (boneDrawState != false)
                 {
@@ -1345,9 +1516,11 @@ namespace DSFBX.ModelViewer
 
                     //AddCapsule(boneParentMatrix.Translation, Vector3.One * radius, Vector3.Zero, Color.White);
 
-                    scale = MathHelper.Max(scale, 0.05f);
+                    //scale /= boneParentMatrix.Scale.Length();
 
-                    AddArrow(boneParentMatrix, scale, scale * 0.25f, radius * 0.5f, Color.White);
+                    scale = radius * 2;
+
+                    AddArrow(boneParentMatrix, scale, scale * 0.25f, radius * 0.25f, Color.White);
                 }
 
 
@@ -1513,12 +1686,16 @@ namespace DSFBX.ModelViewer
 
         private void INPUT_UPDATE(GameTime gameTime)
         {
+            if (ModelListWindow == null || (!IsActive && !ModelListWindow.IsActive))
+                return;
+
+            ModelListWindow.SetTopmost(base.IsActive);
 
             var gamepad = GamePad.GetState(PlayerIndex.One);
 
             
 
-            ModelListWindow.SetTopmost(base.IsActive);
+            
             MouseState mouse = Mouse.GetState();
             Vector2 mousePos = new Vector2((float)mouse.X, (float)mouse.Y);
             KeyboardState keyboard = Keyboard.GetState();

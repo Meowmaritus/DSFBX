@@ -109,6 +109,9 @@
     <None Include="Content\TestFont1.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Content\WP_A_0221.partsbnd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <Page Include="ModelList.xaml">
       <Generator>MSBuild:Compile</Generator>

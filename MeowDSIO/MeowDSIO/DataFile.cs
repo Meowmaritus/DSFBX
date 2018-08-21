@@ -279,7 +279,7 @@ namespace MeowDSIO
             where T : DataFile, new()
         {
             //Should no longer save a file with 0 bytes in it if it gets an exception during write oops
-            var newBytes = DataFile.SaveAsBytes(data, data.FilePath, prog);
+            var newBytes = DataFile.SaveAsBytes(data, filePath, prog);
 
             using (var fileStream = File.Open(filePath, FileMode.OpenOrCreate))
             {

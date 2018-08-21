@@ -11,6 +11,30 @@ namespace DSFBX_GUI
 {
     public class DSFBXConfig : INotifyPropertyChanged
     {
+        public string Manual_LastModelTypeDropdownOption = "Weapon";
+
+        private bool _armorCopyHumanToHollow = true;
+        public bool ArmorCopyHumanToHollow
+        {
+            get => _armorCopyHumanToHollow;
+            set
+            {
+                _armorCopyHumanToHollow = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private bool _armorCopyMaleLegsToFemale = true;
+        public bool ArmorCopyMaleLegsToFemale
+        {
+            get => _armorCopyMaleLegsToFemale;
+            set
+            {
+                _armorCopyMaleLegsToFemale = value;
+                RaisePropertyChanged();
+            }
+        }
+
         private string _importSkeletonPath = "";
         public string ImportSkeletonPath
         {
@@ -77,13 +101,24 @@ namespace DSFBX_GUI
             }
         }
 
-        private string _outputBND = "";
-        public string OutputBND
+        private string _darkSoulsExePath = "";
+        public string DarkSoulsExePath
         {
-            get => _outputBND;
+            get => _darkSoulsExePath;
             set
             {
-                _outputBND = value;
+                _darkSoulsExePath = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private string _darkSoulsRemasteredExePath = "";
+        public string DarkSoulsRemasteredExePath
+        {
+            get => _darkSoulsRemasteredExePath;
+            set
+            {
+                _darkSoulsRemasteredExePath = value;
                 RaisePropertyChanged();
             }
         }
@@ -103,6 +138,17 @@ namespace DSFBX_GUI
             }
         }
 
+        private int _entityModelID = 0;
+        public int EntityModelID
+        {
+            get => _entityModelID;
+            set
+            {
+                _entityModelID = value;
+                RaisePropertyChanged();
+            }
+        }
+
         private double _scalePercent = 100.0;
         public double ScalePercent
         {
@@ -110,6 +156,39 @@ namespace DSFBX_GUI
             set
             {
                 _scalePercent = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private double _sceneRotationX = 0;
+        public double SceneRotationX
+        {
+            get => _sceneRotationX;
+            set
+            {
+                _sceneRotationX = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private double _sceneRotationY = 0;
+        public double SceneRotationY
+        {
+            get => _sceneRotationY;
+            set
+            {
+                _sceneRotationY = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private double _sceneRotationZ = 0;
+        public double SceneRotationZ
+        {
+            get => _sceneRotationZ;
+            set
+            {
+                _sceneRotationZ = value;
                 RaisePropertyChanged();
             }
         }

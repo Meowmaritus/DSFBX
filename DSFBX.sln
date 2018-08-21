@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSFBX.ImporterGUI", "DSFBX.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSFBX.ModelViewer", "DSFBX.ModelViewer\DSFBX.ModelViewer.csproj", "{2C9F8FFF-C731-468D-81E2-F6E341853083}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSFBX.MaterialStudio", "DSFBX.MaterialStudio\DSFBX.MaterialStudio.csproj", "{B9F488E8-E33E-4F9B-B59C-CC4E6391C85F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,14 @@ Global
 		{2C9F8FFF-C731-468D-81E2-F6E341853083}.Release|Any CPU.ActiveCfg = Release|x86
 		{2C9F8FFF-C731-468D-81E2-F6E341853083}.Release|x86.ActiveCfg = Release|x86
 		{2C9F8FFF-C731-468D-81E2-F6E341853083}.Release|x86.Build.0 = Release|x86
+		{B9F488E8-E33E-4F9B-B59C-CC4E6391C85F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9F488E8-E33E-4F9B-B59C-CC4E6391C85F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9F488E8-E33E-4F9B-B59C-CC4E6391C85F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B9F488E8-E33E-4F9B-B59C-CC4E6391C85F}.Debug|x86.Build.0 = Debug|Any CPU
+		{B9F488E8-E33E-4F9B-B59C-CC4E6391C85F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9F488E8-E33E-4F9B-B59C-CC4E6391C85F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9F488E8-E33E-4F9B-B59C-CC4E6391C85F}.Release|x86.ActiveCfg = Release|Any CPU
+		{B9F488E8-E33E-4F9B-B59C-CC4E6391C85F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

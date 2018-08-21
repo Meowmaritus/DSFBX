@@ -19,30 +19,23 @@ namespace DSFBX.Solvers
 
         public void SolveOrientation(FLVER flver, bool solveBones)
         {
-            //foreach (var submesh in flver.Submeshes)
-            //{
-            //    foreach (var vert in submesh.Vertices)
-            //    {
-            //        //Vector4 newNorm = vert.Normal * new Vector4(1, 1, 1, 1);
-            //        //vert.Normal = Vector3.Normalize((Vector3)vert.Normal);
-            //        //onOutput?.Invoke($"{new Vector3(newNorm.X, newNorm.Y, newNorm.Z).Length()}");
+            foreach (var flverMesh in flver.Submeshes)
+            {
+                for (int i = 0; i < flverMesh.Vertices.Count; i++)
+                {
 
-            //        //vert.BiTangent *= new Vector4(1, 1, 1, -1);
+                    var m = Matrix.Identity
+                    * Matrix.CreateRotationY(Importer.SceneRotation.Y)
+                    * Matrix.CreateRotationZ(Importer.SceneRotation.Z)
+                    * Matrix.CreateRotationX(Importer.SceneRotation.X)
+                    ;
 
-            //        var m = Matrix.CreateRotationX(-MathHelper.PiOver2)
-            //        * Matrix.CreateRotationZ(MathHelper.Pi)
-            //        //* Matrix.CreateRotationZ(MathHelper.PiOver2)
-            //        ;
-
-            //        vert.Position = Vector3.Transform(vert.Position, m);
-            //        vert.Normal = Vector3.Transform((Vector3)vert.Normal, m);
-            //        var rotBitangentVec3 = Vector3.Transform((Vector3)vert.BiTangent, m);
-            //        vert.BiTangent = new Vector4(rotBitangentVec3.X, rotBitangentVec3.Y, rotBitangentVec3.Z, vert.BiTangent.W);
-            //    }
-
-            //    //var p = submesh.Material.Parameters.Where(pa => pa.Name == "g_Bumpmap").First();
-            //    //p.Value = "";
-            //}
+                    flverMesh.Vertices[i].Position = Vector3.Transform(flverMesh.Vertices[i].Position, m);
+                    flverMesh.Vertices[i].Normal = Vector3.Normalize(Vector3.Transform((Vector3)flverMesh.Vertices[i].Normal, m));
+                    var rotBitangentVec3 = Vector3.Transform((Vector3)flverMesh.Vertices[i].BiTangent, m);
+                    flverMesh.Vertices[i].BiTangent = new Vector4(rotBitangentVec3.X, rotBitangentVec3.Y, rotBitangentVec3.Z, flverMesh.Vertices[i].BiTangent.W);
+                }
+            }
 
             //Matrix GetBoneMatrix(FlverBone b)
             //{
@@ -113,7 +106,7 @@ namespace DSFBX.Solvers
                 }
             }
 
-            
+
 
             //foreach (var m in flver.Submeshes)
             //{
@@ -156,19 +149,29 @@ namespace DSFBX.Solvers
             //    }
             //}
 
-            //foreach (var dmy in flver.Dummies)
-            //{
-            //    dmy.Position *= new Vector3(-1, 1, 1);
-
-            //    var m = Matrix.CreateTranslation(dmy.Position)
-            //        * Matrix.CreateRotationX(-MathHelper.PiOver2)
-            //        * Matrix.CreateRotationZ(MathHelper.Pi);
-
-            //    if (m.Decompose(out var scale, out _, out var trans))
-            //    {
-            //        dmy.Position = trans * scale;
-            //    }
-            //}
+            foreach (var dmy in flver.Dummies)
+            {
+                var m = Matrix.Identity;
+                bool wasAnyRotationAppliedFatcat = false;
+                if (Importer.SceneRotation.Y != 0)
+                {
+                    m *= Matrix.CreateRotationY(Importer.SceneRotation.Y);
+                    wasAnyRotationAppliedFatcat = true;
+                }
+                if (Importer.SceneRotation.Z != 0)
+                {
+                    m *= Matrix.CreateRotationZ(Importer.SceneRotation.Z);
+                    wasAnyRotationAppliedFatcat = true;
+                }
+                if (Importer.SceneRotation.X != 0)
+                {
+                    m *= Matrix.CreateRotationX(Importer.SceneRotation.X);
+                    wasAnyRotationAppliedFatcat = true;
+                }
+                    
+                if (wasAnyRotationAppliedFatcat)
+                    dmy.Position = Vector3.Transform(dmy.Position, m);
+            }
         }
     }
 }
