@@ -229,7 +229,8 @@ namespace DSFBX_GUI
             Importer.SceneRotation.Z = (float)((context.Config.SceneRotationZ / 180) * Math.PI);
             Importer.ArmorCopyHumanToHollow = context.Config.ArmorCopyHumanToHollow;
             Importer.ArmorCopyMaleLegsToFemale = context.Config.ArmorCopyMaleLegsToFemale;
-
+            Importer.RotateNormalsBackward = context.Config.RotateNormalsBackward;
+            Importer.ConvertNormalsAxis = context.Config.ConvertNormalsAxis;
             Importer.OutputtedFiles = new List<string>();
 
             var successPTDE = false;
@@ -347,6 +348,8 @@ namespace DSFBX_GUI
 
         private void ModelViewer_Exiting(object sender, EventArgs e)
         {
+            modelViewer?.ModelListWindow.Close();
+            modelViewer?.Exit();
             modelViewer = null;
         }
 

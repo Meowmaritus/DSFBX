@@ -248,7 +248,7 @@
                 x:Name="CheckBoxArmorCopyHumanToHollow"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
-                Margin="0,133,10,0"
+                Margin="0,114,10,0"
                 Width="194"
                 HorizontalContentAlignment="Left"
                 VerticalContentAlignment="Center"
@@ -261,7 +261,7 @@
                 x:Name="CheckBoxArmorCopyMaleLegsToFemale"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
-                Margin="0,161,10,0"
+                Margin="0,142,10,0"
                 Width="194"
                 HorizontalContentAlignment="Left"
                 VerticalContentAlignment="Center"
@@ -369,16 +369,16 @@
                 Text="{Binding Config.ImportedSkeletonScalePercent}"
                 IsEnabled="{Binding Config.ImportSkeletonEnable}"
                 />
-            <ComboBox x:Name="ModelTypeDropdown" HorizontalAlignment="Right" Margin="0,86,10,0" VerticalAlignment="Top" Width="103" SelectionChanged="ModelTypeDropdown_SelectionChanged">
+            <ComboBox x:Name="ModelTypeDropdown" HorizontalAlignment="Right" Margin="0,67,10,0" VerticalAlignment="Top" Width="103" SelectionChanged="ModelTypeDropdown_SelectionChanged">
                 <ListBoxItem x:Name="ModelTypeDropdown_Character" Content="Character"/>
                 <ListBoxItem x:Name="ModelTypeDropdown_Object" Content="Object"/>
                 <ListBoxItem x:Name="ModelTypeDropdown_Armor" Content="Armor"/>
                 <ListBoxItem x:Name="ModelTypeDropdown_Weapon" Content="Weapon"/>
             </ComboBox>
 
-            <TextBox HorizontalAlignment="Right" Margin="0,114,10,0" VerticalAlignment="Top" Width="103" Text="{Binding Config.EntityModelID}"/>
-            <Label Content="Model Type:" HorizontalAlignment="Right" Margin="0,83,119,0" VerticalAlignment="Top"/>
-            <Label Content="Model ID:" HorizontalAlignment="Right" Margin="0,109,119,0" VerticalAlignment="Top"/>
+            <TextBox HorizontalAlignment="Right" Margin="0,95,10,0" VerticalAlignment="Top" Width="103" Text="{Binding Config.EntityModelID}"/>
+            <Label Content="Model Type:" HorizontalAlignment="Right" Margin="0,64,119,0" VerticalAlignment="Top"/>
+            <Label Content="Model ID:" HorizontalAlignment="Right" Margin="0,90,119,0" VerticalAlignment="Top"/>
             <Label
                 Content="Dark Souls Remastered EXE Path:"
                 HorizontalAlignment="Left"
@@ -404,6 +404,29 @@
                 Width="64"
                 Margin="218,55,0,0"
                 />
+            <CheckBox
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,76,450,0"
+                Width="204"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
+                IsChecked="{Binding Config.RotateNormalsBackward}" Height="29"
+                Content="Rotate Normals to Face Backward"
+                />
+            <CheckBox
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,68,211,0"
+                Width="224"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
+                IsChecked="{Binding Config.ConvertNormalsAxis}" Height="37"
+                >
+                <TextBlock>
+                    Rotate Normals <LineBreak/>(If your lighting looks bad try this first)
+                </TextBlock>
+            </CheckBox>
         </Grid>
 
         <!--Output-->

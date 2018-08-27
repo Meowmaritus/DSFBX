@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +20,9 @@ namespace DSFBX.ModelViewer
 {
     public partial class ModelList : Window
     {
+        bool DISABLE_BONE_WEIGHTS_COMBO_BOX_EVENTS_FATCAT = false;
+        public int CurrentBoneWeightView = -1;
+
         private List<object> DefaultModelListXamlGeneratedComponents = new List<object>();
 
         public bool RequestExit = false;
@@ -75,6 +79,8 @@ namespace DSFBX.ModelViewer
 
         public bool TEMPORARILY_DISABLE_EVENTS_FATCAT = false;
 
+        public string ModelName = null;
+
         public Dictionary<int, CheckBox> CheckMap_Model = new Dictionary<int, CheckBox>();
 
         public Dictionary<int, CheckBox> CheckMap_Dummy = new Dictionary<int, CheckBox>();
@@ -92,7 +98,7 @@ namespace DSFBX.ModelViewer
         public List<string> SubmeshMaterialNames = new List<string>();
         public List<FlverVector3> BoneScales = new List<FlverVector3>();
         public List<int> BoneIndents = new List<int>();
-
+        public List<FlverSubmesh> FlverSubmeshes = new List<FlverSubmesh>();
 
         public bool ShowBoneBoxes
         {
@@ -147,6 +153,28 @@ namespace DSFBX.ModelViewer
             {
                 MainListView.Items.Add(item);
             }
+
+            DISABLE_BONE_WEIGHTS_COMBO_BOX_EVENTS_FATCAT = true;
+
+            ComboBoxBoneWeightView.Items.Clear();
+
+            ComboBoxBoneWeightView.Items.Add("None");
+
+            foreach (var b in BoneNames)
+            {
+                ComboBoxBoneWeightView.Items.Add(b);
+            }
+
+            if (CurrentBoneWeightView >= 0 && CurrentBoneWeightView < ComboBoxBoneWeightView.Items.Count - 1)
+            {
+                ComboBoxBoneWeightView.SelectedIndex = CurrentBoneWeightView + 1;
+            }
+            else
+            {
+                ComboBoxBoneWeightView.SelectedIndex = 0;
+            }
+
+            DISABLE_BONE_WEIGHTS_COMBO_BOX_EVENTS_FATCAT = false;
 
             CheckMap_Bone = new Dictionary<int, CheckBox>();
             CheckMap_Model = new Dictionary<int, CheckBox>();
@@ -245,7 +273,7 @@ namespace DSFBX.ModelViewer
                     IsChecked = true,
                     Content = nameTb,
                     Height = 16,
-                    VerticalContentAlignment = VerticalAlignment.Center
+                    VerticalContentAlignment = VerticalAlignment.Center,
                     //Margin = new Thickness(BoneIndents[i] * 8, 0, 0, 0),
                 };
 
@@ -452,6 +480,98 @@ namespace DSFBX.ModelViewer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             
+        }
+
+        private void ComboBoxBoneWeightView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DISABLE_BONE_WEIGHTS_COMBO_BOX_EVENTS_FATCAT)
+                return;
+
+            CurrentBoneWeightView = ComboBoxBoneWeightView.SelectedIndex - 1;
+            CheckChangeEvent_FullMeshRebuild();
+        }
+
+        private void ContextMenuBone_CopyName_Click(object sender, RoutedEventArgs e)
+        {
+            var possibleChk = CheckMap_Bone.Where(kvp => kvp.Value == MainListView.SelectedItem);
+            if (possibleChk.Any())
+                Clipboard.SetText(BoneNames[possibleChk.First().Key], TextDataFormat.UnicodeText);
+        }
+
+        private void ViewAllModelInfo()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"Model: {ModelName}");
+            sb.AppendLine();
+            sb.AppendLine("Submeshes:");
+            for (int i = 0; i < FlverSubmeshes.Count; i++)
+            {
+                var sm = FlverSubmeshes[i];
+                sb.AppendLine($"    {(sm.GetName() ?? $"<Unnamed Submesh #{(i + 1)}>")}");
+
+                if (sm.Material == null)
+                {
+                    continue;
+                }
+
+                sb.AppendLine($"        {sm.Material.Name}");
+                sb.AppendLine($"        {sm.Material.MTDName}");
+
+                foreach (var p in sm.Material.Parameters)
+                {
+                    sb.AppendLine($"            {p.ToString()}");
+                }
+            }
+            sb.AppendLine();
+            sb.AppendLine("Bones:");
+            for (int i = 0; i < BoneNames.Count; i++)
+            {
+                sb.Append("    ");
+                for (int j = 0; j < BoneIndents[i]; j++)
+                {
+                    sb.Append("  ");
+                }
+                sb.AppendLine("-" + BoneNames[i]);
+            }
+
+            sb.AppendLine();
+            sb.Append("Included dummy IDs:");
+
+            int h = 9000;
+            foreach (var dmy in DummyIDs)
+            {
+                if (h >= 8)
+                {
+                    h = 0;
+                    sb.AppendLine();
+                    sb.Append("   ");
+                }
+                if (h > 0)
+                    sb.Append(", ");
+                sb.Append(dmy);
+                h++;
+
+            }
+
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.AppendLine();
+
+            var infoWindow = new ModelListInfoPopup();
+            infoWindow.TextBoxInfo.Text = sb.ToString();
+            infoWindow.ShowDialog();
+        }
+
+        private void ContextMenuViewAllInfo_Click(object sender, RoutedEventArgs e)
+        {
+            ViewAllModelInfo();
+        }
+
+        private void ButtonViewAllModelInfo_Click(object sender, RoutedEventArgs e)
+        {
+            ViewAllModelInfo();
         }
     }
 }

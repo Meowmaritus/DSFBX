@@ -56,7 +56,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="VertexPositionColorNormalTangent.cs" />
+    <Compile Include="ModelListInfoPopup.xaml.cs">
+      <DependentUpon>ModelListInfoPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VertexPositionColorNormalTangentTexture.cs" />
     <None Include="App.config" />
     <Compile Include="FrameCounter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -106,6 +109,12 @@
     <None Include="Content\Hud.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Content\NormalMapShader.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\NormalMapShader_ReverseX.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\TestFont1.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -113,6 +122,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <Page Include="ModelListInfoPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ModelList.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

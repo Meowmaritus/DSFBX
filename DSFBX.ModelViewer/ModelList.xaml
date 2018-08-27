@@ -1,9 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Window x:Class="DSFBX.ModelViewer.ModelList" 
         Title="DSFBX Model Viewer Control Panel"
-        Height="560" Width="320" ShowInTaskbar="True" Top="0" Left="0" MinHeight="256" MinWidth="224" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:DSFBX.ModelViewer" Closing="Window_Closing" Loaded="Window_Loaded">
-  <Grid>
-    <ListView Name="MainListView" Grid.Row="0" >
+        Height="676" Width="320" ShowInTaskbar="True" Top="0" Left="0" MinHeight="256" MinWidth="224" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:DSFBX.ModelViewer" Closing="Window_Closing" Loaded="Window_Loaded">
+    <Grid>
+    <ListView Name="MainListView" Grid.Row="0">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem 
+                        x:Name="ContextMenuViewAllInfo"
+                        Header="View All Model Info"
+                        Click="ContextMenuViewAllInfo_Click"
+                    />
+                </ContextMenu>
+            </ListView.ContextMenu>
+            <Button
+                x:Name="ButtonViewAllModelInfo"
+                Content="VIEW ALL MODEL INFO..."
+                FontWeight="Bold"
+                FontSize="16"
+                Padding="4"
+                Click="ButtonViewAllModelInfo_Click"
+                />
+            <CheckBox Name="ShowWireframeCheckbox" Content="Show Wireframe" FontWeight="Bold" IsChecked="False" />
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="Wireframe Opacity:"
+                    />
+
+                <Slider
+                    Name="SliderWireframeOpacity" 
+                    Minimum="0" Maximum="1" HorizontalAlignment="Stretch"
+                    Value="0.25" TickFrequency="0.25" TickPlacement="Both"
+                    SmallChange="0.005"
+                    LargeChange="0.125"
+                    Grid.Column="1"
+                    />
+            </Grid>
+            <CheckBox Name="RenderDoubleSidedCheckBox" Content="Render Double-Sided" FontWeight="Bold" IsThreeState="True" IsChecked="{x:Null}" />
+            <CheckBox Name="ShowDummyPointTextLabels" Content="Show Dummy Point Text Labels" FontWeight="Black" IsChecked="False" FontSize="16" VerticalContentAlignment="Center"/>
+            <CheckBox Name="ShowBoneNameTextLabels" Content="Show Bone Name Labels" FontWeight="Black" IsChecked="False"  FontSize="16" VerticalContentAlignment="Center"/>
+            <CheckBox Name="ShowTexturesCheckBox" Content="Render Textures" FontWeight="Black" IsChecked="True"  FontSize="16" VerticalContentAlignment="Center"/>
             <CheckBox Name="ShowBoneBoxesCheckbox" Content="Show All Bone Bounding Boxes" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click" />
             <CheckBox Name="ShowDummyDirections" Content="Show Dummy Directional Indicators" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click" />
             <CheckBox Name="ShowDebugNormals" Content="Draw Normal Vectors (Debug)" FontWeight="Bold" IsChecked="False" Click="Checkbox_Click" />
@@ -59,17 +101,53 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="24"/>
+                </Grid.RowDefinitions>
+
                 <Label
                     Grid.Column="0"
-                    Content="BONE JOINT RADIUS:"
+                    Content="BONE THICKNESS:"
+                    FontWeight="Bold"
                     />
 
                 <Slider
                     Name="SliderBoneJointRadius" 
                     Minimum="0" Maximum="10" HorizontalAlignment="Stretch"
-                    Value="1" TickFrequency="1" TickPlacement="Both"
+                    Value="2" TickFrequency="1" TickPlacement="Both"
                     Grid.Column="1"
                     ValueChanged="Slider_ValueChanged"
+                    />
+
+                <CheckBox 
+                    Grid.Row="2"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Left"
+                    Margin="32,0,0,0"
+                    VerticalContentAlignment="Center"
+                    Name="ProportionallySizedBonesCheckBox" 
+                    Content="Proportional Bone Thickness"
+                    FontWeight="Bold" IsChecked="True" Click="Checkbox_Click" />
+            </Grid>
+
+            
+
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="BONE WEIGHT VIEW:"
+                    />
+
+                <ComboBox
+                    Name="ComboBoxBoneWeightView" 
+                    Grid.Column="1"
+                    SelectionChanged="ComboBoxBoneWeightView_SelectionChanged"
                     />
             </Grid>
 

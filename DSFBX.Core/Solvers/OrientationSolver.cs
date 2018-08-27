@@ -79,28 +79,69 @@ namespace DSFBX.Solvers
             {
                 for (int b = 0; b < flver.Bones.Count; b++)
                 {
-                    flver.Bones[b].Scale = Vector3.One;
+                    //flver.Bones[b].Scale = Vector3.One;
 
 
-                    if (flver.Bones[b].Scale.X < 0)
+                    //if (flver.Bones[b].Scale.X < 0)
+                    //{
+                    //    flver.Bones[b].Scale.X *= -1;
+                    //    flver.Bones[b].EulerRadian.Y += MathHelper.Pi;
+
+                    //    foreach (var dmy in flver.Dummies.Where(dm => dm.ParentBoneIndex == b))
+                    //    {
+                    //        dmy.Position *= new Vector3(-1, 1, 1);
+                    //    }
+                    //}
+
+                    //if (flver.Bones[b].Scale.Y < 0)
+                    //{
+                    //    flver.Bones[b].Scale.Y *= -1;
+                    //    flver.Bones[b].EulerRadian.X += MathHelper.Pi;
+
+                    //    foreach (var dmy in flver.Dummies.Where(dm => dm.ParentBoneIndex == b))
+                    //    {
+                    //        dmy.Position *= new Vector3(1, -1, 1);
+                    //    }
+                    //}
+
+                    //Do this only for parent bones, cuz child bones could be real bones like on a whip...?
+                    //if (Importer.OutputType == DSFBXOutputType.Weapon && flver.Bones[b].ParentIndex == -1)
+                    //{
+                    //    var oldBoneRotMatrix = Matrix.CreateRotationY(flver.Bones[b].EulerRadian.Y)
+                    //        * Matrix.CreateRotationZ(flver.Bones[b].EulerRadian.Z)
+                    //        * Matrix.CreateRotationX(flver.Bones[b].EulerRadian.X);
+                    //    foreach (var dmy in flver.Dummies.Where(d => d.ParentBoneIndex == b))
+                    //    {
+                    //        dmy.Position = Vector3.Transform(dmy.Position, Matrix.Invert(oldBoneRotMatrix) * Matrix.CreateRotationX(MathHelper.Pi));
+                    //    }
+                    //    flver.Bones[b].EulerRadian = Vector3.Zero;
+                    //    flver.Bones[b].Scale = Vector3.One;
+                    //}
+                }
+            }
+
+
+            if (Importer.RotateNormalsBackward || Importer.ConvertNormalsAxis)
+            {
+                foreach (var sm in flver.Submeshes)
+                {
+                    foreach (var vert in sm.Vertices)
                     {
-                        flver.Bones[b].Scale.X *= -1;
-                        flver.Bones[b].EulerRadian.Y += MathHelper.Pi;
-
-                        foreach (var dmy in flver.Dummies.Where(dm => dm.ParentBoneIndex == b))
+                        if (vert.Normal != null)
                         {
-                            dmy.Position *= new Vector3(-1, 1, 1);
-                        }
-                    }
+                            if (Importer.ConvertNormalsAxis)
+                            {
+                                var x = vert.Normal.X;
+                                var y = vert.Normal.Y;
+                                var z = vert.Normal.Z;
 
-                    if (flver.Bones[b].Scale.Y < 0)
-                    {
-                        flver.Bones[b].Scale.Y *= -1;
-                        flver.Bones[b].EulerRadian.X += MathHelper.Pi;
+                                vert.Normal = new Vector3(x, -z, y);
+                            }
 
-                        foreach (var dmy in flver.Dummies.Where(dm => dm.ParentBoneIndex == b))
-                        {
-                            dmy.Position *= new Vector3(1, -1, 1);
+                            if (Importer.RotateNormalsBackward)
+                                vert.Normal = Vector3.Transform((Vector3)vert.Normal, Matrix.CreateRotationY(MathHelper.Pi));
+
+                            
                         }
                     }
                 }

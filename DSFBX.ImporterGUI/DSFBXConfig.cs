@@ -13,6 +13,28 @@ namespace DSFBX_GUI
     {
         public string Manual_LastModelTypeDropdownOption = "Weapon";
 
+        private bool _rotateNormalsBackward = false;
+        public bool RotateNormalsBackward
+        {
+            get => _rotateNormalsBackward;
+            set
+            {
+                _rotateNormalsBackward = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private bool _convertNormalsAxis = false;
+        public bool ConvertNormalsAxis
+        {
+            get => _convertNormalsAxis;
+            set
+            {
+                _convertNormalsAxis = value;
+                RaisePropertyChanged();
+            }
+        }
+
         private bool _armorCopyHumanToHollow = true;
         public bool ArmorCopyHumanToHollow
         {

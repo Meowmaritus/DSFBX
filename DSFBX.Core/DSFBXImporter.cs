@@ -47,6 +47,9 @@ namespace DSFBX
         public bool ArmorCopyHumanToHollow = true;
         public bool ArmorCopyMaleLegsToFemale = true;
 
+        public bool RotateNormalsBackward = false;
+        public bool ConvertNormalsAxis = false;
+
         public string PlaceholderMaterialName = "P_Metal[DSB]";
 
 
@@ -283,14 +286,22 @@ namespace DSFBX
                 foreach (var boneContent in FBX_RootBones)
                 {
                     var nextRootBoneIndex = BoneSolver.SolveBone(flver, fbx, boneContent, -1);
-                    topLevelBoneIndices.Add(nextRootBoneIndex);
+                    if (nextRootBoneIndex >= 0 && nextRootBoneIndex < flver.Bones.Count)
+                    {
+                        topLevelBoneIndices.Add(nextRootBoneIndex);
+                    }
+                    
                     //flver.Bones[nextRootBoneIndex].Name = shortModelName;
                     flverRootBoneNameMap.Add(flver.Bones[nextRootBoneIndex], boneContent.Name);
                 }
 
                 foreach (var boneContent in FBX_Bones)
                 {
-                    topLevelBoneIndices.Add(BoneSolver.SolveBone(flver, fbx, boneContent, -1));
+                    int nextBoneIndex = BoneSolver.SolveBone(flver, fbx, boneContent, -1);
+                    if (nextBoneIndex >= 0 && nextBoneIndex < flver.Bones.Count)
+                    {
+                        topLevelBoneIndices.Add(nextBoneIndex);
+                    }
                 }
 
                 for (int i = 0; i < topLevelBoneIndices.Count; i++)
@@ -529,7 +540,7 @@ namespace DSFBX
                                         matTextures.Add("g_Diffuse", texKvp.Value.Filename);
                                     }
                                 }
-                                else if (!IsRemaster && (texKvp.Key == "Specular" || texKvp.Key == "SpecularFactor"))
+                                else if (!IsRemaster && (texKvp.Key == "Specular"))
                                 {
                                     if (!matTextures.ContainsKey("g_Specular"))
                                     {
@@ -697,6 +708,11 @@ namespace DSFBX
                                     var channelValue = (FbxPipeline.Vector3)(channel[i]);
                                     var normalRotMatrix = FbxPipeline.Matrix.CreateRotationX(-MathHelper.PiOver2);
                                     var normalInputVector = new FbxPipeline.Vector3(-channelValue.X, channelValue.Y, channelValue.Z);
+
+                                    //if (RotateNormalsBackward)
+                                    //{
+                                    //    normalRotMatrix *= FbxPipeline.Matrix.CreateRotationY(MathHelper.Pi);
+                                    //}
 
                                     FbxPipeline.Vector3 rotatedNormal = FbxPipeline.Vector3.Normalize(
                                         FbxPipeline.Vector3.TransformNormal(normalInputVector, normalRotMatrix)
