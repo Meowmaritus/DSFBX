@@ -1635,6 +1635,7 @@ namespace DSFBX.ModelViewer
             DrawThiccText(DEBUG_FONT, $"# Overlay Primitives: {(hitboxPrimitives?.Length ?? 0)}", new Vector2(8, 8) + new Vector2(0, 16 * line++), Color.Yellow, 1);
             line++;
             DrawThiccText(DEBUG_FONT, $"Tab (Back): TO FILE BROWSER", new Vector2(8, 8) + new Vector2(0, 16 * line++), Color.Yellow, 1);
+            DrawThiccText(DEBUG_FONT, $"F1: LOAD ADDITIONAL TEXTURE FILES", new Vector2(8, 8) + new Vector2(0, 16 * line++), Color.Cyan, 1);
             DrawThiccText(DEBUG_FONT, $"F5 (Start): RELOAD MODEL", new Vector2(8, 8) + new Vector2(0, 16 * line++), Color.Yellow, 1);
             DrawThiccText(DEBUG_FONT, $"Escape (LB + RB + A + Start): EXIT APPLICATION", new Vector2(8, 8) + new Vector2(0, 16 * line++), Color.Yellow, 1);
             line++;
