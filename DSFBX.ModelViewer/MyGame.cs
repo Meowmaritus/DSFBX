@@ -18,6 +18,8 @@ namespace DSFBX.ModelViewer
 {
     public class MyGame : Game
     {
+        List<string> textureLoadErrors = new List<string>();
+
         Texture2D DEFAULT_TEXTURE_D;
         Texture2D DEFAULT_TEXTURE_S;
         Texture2D DEFAULT_TEXTURE_N;
@@ -290,6 +292,7 @@ namespace DSFBX.ModelViewer
 
         private void LoadAllTextures()
         {
+            textureLoadErrors = new List<string>();
             tex_diffuse = new Texture2D[inputFiles.Length][];
             tex_normal = new Texture2D[inputFiles.Length][];
             tex_specular = new Texture2D[inputFiles.Length][];
@@ -309,7 +312,15 @@ namespace DSFBX.ModelViewer
                         {
                             using (var memStream = new MemoryStream(TEXTURE_POOL[texName]))
                             {
-                                tex_diffuse[i][j] = Texture2D.FromStream(GraphicsDevice, memStream);
+                                try
+                                {
+                                    tex_diffuse[i][j] = Texture2D.FromStream(GraphicsDevice, memStream);
+                                }
+                                catch
+                                {
+                                    tex_diffuse[i][j] = null;
+                                    textureLoadErrors.Add(texName);
+                                }
                             }
                         }
                         else
@@ -326,7 +337,15 @@ namespace DSFBX.ModelViewer
                         {
                             using (var memStream = new MemoryStream(TEXTURE_POOL[texName]))
                             {
-                                tex_normal[i][j] = Texture2D.FromStream(GraphicsDevice, memStream);
+                                try
+                                {
+                                    tex_normal[i][j] = Texture2D.FromStream(GraphicsDevice, memStream);
+                                }
+                                catch
+                                {
+                                    tex_normal[i][j] = null;
+                                    textureLoadErrors.Add(texName);
+                                }
                             }
                         }
                         else
@@ -343,7 +362,16 @@ namespace DSFBX.ModelViewer
                         {
                             using (var memStream = new MemoryStream(TEXTURE_POOL[texName]))
                             {
-                                tex_specular[i][j] = Texture2D.FromStream(GraphicsDevice, memStream);
+                                try
+                                {
+                                    tex_specular[i][j] = Texture2D.FromStream(GraphicsDevice, memStream);
+                                    
+                                }
+                                catch
+                                {
+                                    tex_specular[i][j] = null;
+                                    textureLoadErrors.Add(texName);
+                                }
                             }
                         }
                         else
@@ -352,6 +380,17 @@ namespace DSFBX.ModelViewer
                         }
                     }
                 }
+            }
+
+            if (textureLoadErrors.Count > 0)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("The following texture(s) failed to load:");
+                foreach (var tle in textureLoadErrors)
+                {
+                    sb.AppendLine("    " + tle);
+                }
+                System.Windows.MessageBox.Show(sb.ToString(), "Texture(s) Failed To Load", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
