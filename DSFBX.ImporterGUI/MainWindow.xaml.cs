@@ -179,170 +179,177 @@ namespace DSFBX_GUI
 
         private async void ButtonImport_Click(object sender, RoutedEventArgs e)
         {
-            if (context.Config.AutoClearOutput)
+            try
             {
-                ConsoleOutputDocument.Blocks.Clear();
-            }
-
-            if (!File.Exists(context.Config.InputFBX))
-            {
-                MessageBox.Show("Selected input FBX file does not exist.");
-                return;
-            }
-
-            if (context.Config.ImportSkeletonEnable && !File.Exists(context.Config.ImportSkeletonPath))
-            {
-                MessageBox.Show("Selected skeleton import source file does not exist.");
-                return;
-            }
-
-            Importer.FbxPath = context.Config.InputFBX;
-
-            if (ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Character)
-            {
-                Importer.OutputType = DSFBXOutputType.Character;
-            }
-            else if (ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Object)
-            {
-                Importer.OutputType = DSFBXOutputType.Object;
-            }
-            else if (ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor)
-            {
-                Importer.OutputType = DSFBXOutputType.Armor;
-            }
-            else if (ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Weapon)
-            {
-                Importer.OutputType = DSFBXOutputType.Weapon;
-            }
-
-            Importer.ModelID = context.Config.EntityModelID;
-            Importer.EntityModelIndex = context.Config.ModelIndex;
-            Importer.ScalePercent = context.Config.ScalePercent;
-            Importer.ImportSkeletonPath = 
-                context.Config.ImportSkeletonEnable 
-                ? context.Config.ImportSkeletonPath : null;
-            Importer.IsDoubleSided = context.Config.ImportDoubleSided;
-            Importer.GenerateBackup = context.Config.GenerateBackup;
-            Importer.ImportedSkeletonScalePercent = context.Config.ImportedSkeletonScalePercent;
-            Importer.SceneRotation.X = (float)((context.Config.SceneRotationX / 180) * Math.PI);
-            Importer.SceneRotation.Y = (float)((context.Config.SceneRotationY / 180) * Math.PI);
-            Importer.SceneRotation.Z = (float)((context.Config.SceneRotationZ / 180) * Math.PI);
-            Importer.ArmorCopyHumanToHollow = context.Config.ArmorCopyHumanToHollow;
-            Importer.ArmorCopyMaleLegsToFemale = context.Config.ArmorCopyMaleLegsToFemale;
-            Importer.RotateNormalsBackward = context.Config.RotateNormalsBackward;
-            Importer.ConvertNormalsAxis = context.Config.ConvertNormalsAxis;
-            Importer.OutputtedFiles = new List<string>();
-
-            var successPTDE = false;
-            var successDS1R = false;
-
-            var specifiedPTDE = false;
-            var specifiedDS1R = false;
-
-            if (!string.IsNullOrWhiteSpace(context.Config.DarkSoulsExePath))
-            {
-                if (!File.Exists(context.Config.DarkSoulsExePath))
+                if (context.Config.AutoClearOutput)
                 {
-                    MessageBox.Show("Selected Dark Souls PTDE EXE file does not exist. Model will not be imported to Dark Souls PTDE.");
-                }
-                else
-                {
-                    specifiedPTDE = true;
-
-                    Importer.InterrootDir = new FileInfo(context.Config.DarkSoulsExePath).DirectoryName;
-                    Importer.IsRemaster = false;
-
-                    successPTDE = await Importer.BeginImport();
-                }
-            }
-            else
-            {
-                successPTDE = true;
-            }
-
-            if (!string.IsNullOrWhiteSpace(context.Config.DarkSoulsRemasteredExePath))
-            {
-                if (!File.Exists(context.Config.DarkSoulsRemasteredExePath))
-                {
-                    MessageBox.Show("Selected Dark Souls Remastered EXE file does not exist. Model will not be imported to Dark Souls Remastered.");
-                }
-                else
-                {
-                    specifiedDS1R = true;
-
-                    Importer.InterrootDir = new FileInfo(context.Config.DarkSoulsRemasteredExePath).DirectoryName;
-                    Importer.IsRemaster = true;
-
-                    successDS1R = await Importer.BeginImport();
-                }
-            }
-            else
-            {
-                successDS1R = true;
-            }
-
-
-
-            if (!(specifiedPTDE || specifiedDS1R))
-            {
-                MessageBox.Show("Neither a Dark Souls PTDE or Dark Souls Remastered EXE was specified. Nowhere to import to.",
-                    "Neither EXE Specified", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (successPTDE && !successDS1R)
-            {
-                MessageBox.Show("Dark Souls Remastered import failed. See output log for more information.",
-                    "Dark Souls Remastered Import Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (!successPTDE && successDS1R)
-            {
-                MessageBox.Show("Dark Souls PTDE import failed. See output log for more information.",
-                    "Dark Souls PTDE Import Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (!successPTDE && !successDS1R)
-            {
-                MessageBox.Show("Dark Souls PTDE and Dark Souls Remastered imports both failed. See output log for more information.",
-                    "Dark Souls PTDE and Remastered Imports Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (context.Config.LaunchModelViewerAfterImport)
-            {
-                //System.Diagnostics.Process.Start(GetModelViewerExecutable(), $"\"{context.Config.OutputBND}\"");
-                //DSFBX.ModelViewer.App.Main();
-                //DSFBX.ModelViewer.Program.Main(new string[] { context.Config.OutputBND });
-
-                string[] inputFiles = null;
-
-                if (specifiedPTDE && successPTDE)
-                {
-                    inputFiles = Importer
-                        .OutputtedFiles
-                        .Where(x => !x.ToUpper().EndsWith(".DCX"))
-                        .ToArray();
-                }
-                else if (specifiedDS1R && successDS1R)
-                {
-                    inputFiles = Importer
-                        .OutputtedFiles
-                        .Where(x => x.ToUpper().EndsWith(".DCX"))
-                        .ToArray();
+                    ConsoleOutputDocument.Blocks.Clear();
                 }
 
-                if (inputFiles != null && inputFiles.Length > 0)
+                if (!File.Exists(context.Config.InputFBX))
                 {
-                    if (modelViewer != null)
+                    MessageBox.Show("Selected input FBX file does not exist.");
+                    return;
+                }
+
+                if (context.Config.ImportSkeletonEnable && !File.Exists(context.Config.ImportSkeletonPath))
+                {
+                    MessageBox.Show("Selected skeleton import source file does not exist.");
+                    return;
+                }
+
+                Importer.FbxPath = context.Config.InputFBX;
+
+                if (ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Character)
+                {
+                    Importer.OutputType = DSFBXOutputType.Character;
+                }
+                else if (ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Object)
+                {
+                    Importer.OutputType = DSFBXOutputType.Object;
+                }
+                else if (ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor)
+                {
+                    Importer.OutputType = DSFBXOutputType.Armor;
+                }
+                else if (ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Weapon)
+                {
+                    Importer.OutputType = DSFBXOutputType.Weapon;
+                }
+
+                Importer.ModelID = context.Config.EntityModelID;
+                Importer.EntityModelIndex = context.Config.ModelIndex;
+                Importer.ScalePercent = context.Config.ScalePercent;
+                Importer.ImportSkeletonPath =
+                    context.Config.ImportSkeletonEnable
+                    ? context.Config.ImportSkeletonPath : null;
+                Importer.IsDoubleSided = context.Config.ImportDoubleSided;
+                Importer.GenerateBackup = context.Config.GenerateBackup;
+                Importer.ImportedSkeletonScalePercent = context.Config.ImportedSkeletonScalePercent;
+                Importer.SceneRotation.X = (float)((context.Config.SceneRotationX / 180) * Math.PI);
+                Importer.SceneRotation.Y = (float)((context.Config.SceneRotationY / 180) * Math.PI);
+                Importer.SceneRotation.Z = (float)((context.Config.SceneRotationZ / 180) * Math.PI);
+                Importer.ArmorCopyHumanToHollow = context.Config.ArmorCopyHumanToHollow;
+                Importer.ArmorCopyMaleLegsToFemale = context.Config.ArmorCopyMaleLegsToFemale;
+                Importer.RotateNormalsBackward = context.Config.RotateNormalsBackward;
+                Importer.ConvertNormalsAxis = context.Config.ConvertNormalsAxis;
+                Importer.OutputtedFiles = new List<string>();
+
+                var successPTDE = false;
+                var successDS1R = false;
+
+                var specifiedPTDE = false;
+                var specifiedDS1R = false;
+
+                if (!string.IsNullOrWhiteSpace(context.Config.DarkSoulsExePath))
+                {
+                    if (!File.Exists(context.Config.DarkSoulsExePath))
                     {
-                        modelViewer.LoadNewModels(inputFiles);
+                        MessageBox.Show("Selected Dark Souls PTDE EXE file does not exist. Model will not be imported to Dark Souls PTDE.");
                     }
                     else
                     {
-                        modelViewer = new DSFBX.ModelViewer.MyGame();
-                        modelViewer.IsQuickRunFromModelImporter = true;
-                        modelViewer.inputFiles = inputFiles;
+                        specifiedPTDE = true;
 
-                        modelViewer.Exiting += ModelViewer_Exiting;
+                        Importer.InterrootDir = new FileInfo(context.Config.DarkSoulsExePath).DirectoryName;
+                        Importer.IsRemaster = false;
 
-                        modelViewer.Run(Microsoft.Xna.Framework.GameRunBehavior.Synchronous);
+                        successPTDE = await Importer.BeginImport();
                     }
                 }
+                else
+                {
+                    successPTDE = true;
+                }
+
+                if (!string.IsNullOrWhiteSpace(context.Config.DarkSoulsRemasteredExePath))
+                {
+                    if (!File.Exists(context.Config.DarkSoulsRemasteredExePath))
+                    {
+                        MessageBox.Show("Selected Dark Souls Remastered EXE file does not exist. Model will not be imported to Dark Souls Remastered.");
+                    }
+                    else
+                    {
+                        specifiedDS1R = true;
+
+                        Importer.InterrootDir = new FileInfo(context.Config.DarkSoulsRemasteredExePath).DirectoryName;
+                        Importer.IsRemaster = true;
+
+                        successDS1R = await Importer.BeginImport();
+                    }
+                }
+                else
+                {
+                    successDS1R = true;
+                }
+
+
+
+                if (!(specifiedPTDE || specifiedDS1R))
+                {
+                    MessageBox.Show("Neither a Dark Souls PTDE or Dark Souls Remastered EXE was specified. Nowhere to import to.",
+                        "Neither EXE Specified", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else if (successPTDE && !successDS1R)
+                {
+                    MessageBox.Show("Dark Souls Remastered import failed. See output log for more information.",
+                        "Dark Souls Remastered Import Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else if (!successPTDE && successDS1R)
+                {
+                    MessageBox.Show("Dark Souls PTDE import failed. See output log for more information.",
+                        "Dark Souls PTDE Import Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else if (!successPTDE && !successDS1R)
+                {
+                    MessageBox.Show("Dark Souls PTDE and Dark Souls Remastered imports both failed. See output log for more information.",
+                        "Dark Souls PTDE and Remastered Imports Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else if (context.Config.LaunchModelViewerAfterImport)
+                {
+                    //System.Diagnostics.Process.Start(GetModelViewerExecutable(), $"\"{context.Config.OutputBND}\"");
+                    //DSFBX.ModelViewer.App.Main();
+                    //DSFBX.ModelViewer.Program.Main(new string[] { context.Config.OutputBND });
+
+                    string[] inputFiles = null;
+
+                    if (specifiedPTDE && successPTDE)
+                    {
+                        inputFiles = Importer
+                            .OutputtedFiles
+                            .Where(x => !x.ToUpper().EndsWith(".DCX"))
+                            .ToArray();
+                    }
+                    else if (specifiedDS1R && successDS1R)
+                    {
+                        inputFiles = Importer
+                            .OutputtedFiles
+                            .Where(x => x.ToUpper().EndsWith(".DCX"))
+                            .ToArray();
+                    }
+
+                    if (inputFiles != null && inputFiles.Length > 0)
+                    {
+                        if (modelViewer != null)
+                        {
+                            modelViewer.LoadNewModels(inputFiles);
+                        }
+                        else
+                        {
+                            modelViewer = new DSFBX.ModelViewer.MyGame();
+                            modelViewer.IsQuickRunFromModelImporter = true;
+                            modelViewer.inputFiles = inputFiles;
+
+                            modelViewer.Exiting += ModelViewer_Exiting;
+
+                            modelViewer.Run(Microsoft.Xna.Framework.GameRunBehavior.Synchronous);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Emergency Error Box", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
