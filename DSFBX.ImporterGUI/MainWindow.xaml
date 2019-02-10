@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DSFBX_GUI"
         mc:Ignorable="d"
-        Title="DSFBX" 
+        Title="DSFBX Beta v1.0.2" 
         Width="960"
         Height="540" 
         MinWidth="960"
@@ -268,6 +268,19 @@
                 IsChecked="{Binding Config.ArmorCopyMaleLegsToFemale}" Height="29"
                 >
                 Copy Male Legs -> Female Legs
+            </CheckBox>
+
+            <CheckBox
+                x:Name="CheckBoxArmorFixBodyNormals"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,168,10,0"
+                Width="194"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
+                IsChecked="{Binding Config.ArmorFixBodyNormals}" Height="29"
+                >
+                Fix Body Normals
             </CheckBox>
 
             <!--Import-->

@@ -57,6 +57,17 @@ namespace DSFBX_GUI
             }
         }
 
+        private bool _armorFixBodyNormals = true;
+        public bool ArmorFixBodyNormals
+        {
+            get => _armorFixBodyNormals;
+            set
+            {
+                _armorFixBodyNormals = value;
+                RaisePropertyChanged();
+            }
+        }
+
         private string _importSkeletonPath = "";
         public string ImportSkeletonPath
         {

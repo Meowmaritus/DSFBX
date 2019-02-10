@@ -231,6 +231,7 @@ namespace DSFBX_GUI
                 Importer.SceneRotation.Z = (float)((context.Config.SceneRotationZ / 180) * Math.PI);
                 Importer.ArmorCopyHumanToHollow = context.Config.ArmorCopyHumanToHollow;
                 Importer.ArmorCopyMaleLegsToFemale = context.Config.ArmorCopyMaleLegsToFemale;
+                Importer.ArmorFixBodyNormals = context.Config.ArmorFixBodyNormals;
                 Importer.RotateNormalsBackward = context.Config.RotateNormalsBackward;
                 Importer.ConvertNormalsAxis = context.Config.ConvertNormalsAxis;
                 Importer.OutputtedFiles = new List<string>();
@@ -525,6 +526,7 @@ namespace DSFBX_GUI
         {
             CheckBoxArmorCopyMaleLegsToFemale.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
             CheckBoxArmorCopyHumanToHollow.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
+            CheckBoxArmorFixBodyNormals.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
         }
 
         private void ButtonBrowseDS1R_Click(object sender, RoutedEventArgs e)

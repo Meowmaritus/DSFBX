@@ -46,6 +46,7 @@ namespace DSFBX
 
         public bool ArmorCopyHumanToHollow = true;
         public bool ArmorCopyMaleLegsToFemale = true;
+        public bool ArmorFixBodyNormals = true;
 
         public bool RotateNormalsBackward = false;
         public bool ConvertNormalsAxis = false;
@@ -73,7 +74,7 @@ namespace DSFBX
             CheckResourceLoad();
         }
 
-        private static T LoadEmbRes<T>(string relResName, Func<DSBinaryReader, T> getResFunc)
+        internal static T LoadEmbRes<T>(string relResName, Func<DSBinaryReader, T> getResFunc)
             where T : class
         {
             T result = null;
@@ -1358,6 +1359,11 @@ namespace DSFBX
                 }
             }
 
+            if (ArmorFixBodyNormals)
+            {
+                FixBodyNormals(entityBnd.Models[EntityModelIndex].Mesh);
+            }
+
             OnFlverGenerated(entityBnd.Models[EntityModelIndex].Mesh);
 
             foreach (var entityModel in entityBnd.Models)
@@ -1376,6 +1382,30 @@ namespace DSFBX
             }
 
             return true;
+        }
+
+        private void FixBodyNormals(FLVER flver)
+        {
+            foreach (var sm in flver.Submeshes)
+            {
+                var submeshName = sm.GetName();
+                if (sm.Material.MTDName == "Ps_Body[DSB]")
+                {
+                    Print($"Attempting to fix human body submesh '{submeshName}', targeting body part type '{sm.Material.Name}'...");
+                    var fixResults = HumanBodyFixer.FixBodyPiece(sm, sm.Material.Name, out string possibleError);
+                    if (possibleError != null)
+                    {
+                        PrintError(possibleError);
+                    }
+                    else
+                    {
+                        if (fixResults.VertsFixed > 0)
+                            Print($"Matched {fixResults.VertsFixed} / {fixResults.TotalSourceVerts} vertices in submesh '{submeshName}' to the original '{sm.Material.Name}' mesh and fixed normals, tangents, and bone weights...");
+                        else
+                            PrintWarning($"Unable to match any vertices in submesh '{submeshName}' with the originals in '{sm.Material.Name}'.");
+                    }
+                }
+            }
         }
 
         private string GetModelPath(string modelName)

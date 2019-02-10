@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="DDSHelper.cs" />
     <Compile Include="DSFBX_Enums.cs" />
+    <Compile Include="HumanBodyFixer.cs" />
     <Compile Include="Solvers\BoneSolver.cs" />
     <Compile Include="DSFBXContentBuildLogger.cs" />
     <Compile Include="DSFBXGenericEventArgs.cs" />
@@ -90,6 +91,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="EmbeddedResources\AM_F_0000.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\AM_F_0000_M.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\AM_M_0000.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\AM_M_0000_M.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\BD_F_0000.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\BD_F_0000_M.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\BD_M_0000.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\BD_M_0000_M.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\LG_F_0000.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\LG_F_0000_M.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\LG_M_0000.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\LG_M_0000_M.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\FC_F_0000.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\FC_F_0000_L.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\FC_M_0000.partsbnd" />
+    <EmbeddedResource Include="EmbeddedResources\FC_M_0000_M.partsbnd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
