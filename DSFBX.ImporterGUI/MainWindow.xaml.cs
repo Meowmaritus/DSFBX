@@ -671,5 +671,10 @@ namespace DSFBX_GUI
             DarkSoulsScripting.Hook.WFloat(thingAddr + 0x138C, 1.0f);
             DarkSoulsScripting.Hook.WFloat(thingAddr + 0x1390, 10.0f);
         }
+
+        private void ButtonDONATE_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://www.paypal.me/Meowmaritus");
+        }
     }
 }

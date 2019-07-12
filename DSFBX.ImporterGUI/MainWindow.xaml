@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DSFBX_GUI"
         mc:Ignorable="d"
-        Title="DSFBX Beta v1.0.2" 
+        Title="DSFBX Beta v1.1" 
         Width="773"
         Height="640" 
         MinWidth="960"
@@ -19,15 +19,18 @@
     </Window.DataContext>
 
     <Grid>
-        <Label 
-            Content="Created by Meowmaritus"
+        <Button 
+            x:Name="buttonDONATE"
+            Content="Created by Meowmaritus. Click to donate and show your support."
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
-            Padding="0"
-            Margin="0,4,16,0"
-            FontSize="9"
+            Padding="4,0,4,0"
+            Margin="0,4,10,0"
+            FontSize="12"
             FontWeight="SemiBold"
-            Height="16"
+            Foreground="White"
+            Height="20" Click="ButtonDONATE_Click"
+            Background="Green"
             />
 
         <Grid
