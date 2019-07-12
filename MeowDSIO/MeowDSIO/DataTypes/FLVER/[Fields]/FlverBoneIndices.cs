@@ -100,6 +100,24 @@ namespace MeowDSIO.DataTypes.FLVER
             d = packedD;
         }
 
+        public List<FlverBone> GetBones()
+        {
+            var a = ContainingSubmesh.GetBoneFromLocalIndex(A, true);
+            var b = ContainingSubmesh.GetBoneFromLocalIndex(B, true);
+            var c = ContainingSubmesh.GetBoneFromLocalIndex(C, true);
+            var d = ContainingSubmesh.GetBoneFromLocalIndex(D, true);
+            var result = new List<FlverBone>();
+            if (a != null)
+                result.Add(a);
+            if (b != null)
+                result.Add(b);
+            if (c != null)
+                result.Add(c);
+            if (d != null)
+                result.Add(d);
+            return result;
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();

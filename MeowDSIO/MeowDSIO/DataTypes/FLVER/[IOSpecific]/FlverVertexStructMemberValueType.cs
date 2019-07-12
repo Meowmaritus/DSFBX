@@ -26,7 +26,7 @@ namespace MeowDSIO.DataTypes.FLVER
         //UNK0x0D = 0x0D,
         //UNK0x0E = 0x0E,
         //UNK0x0F = 0x0F,
-        //UNK0x10 = 0x10,
+        PackedVector4B = 0x10,
         BoneIndicesStruct = 0x11,
         //UNK0x12 = 0x12,
         PackedVector4 = 0x13,
@@ -37,5 +37,7 @@ namespace MeowDSIO.DataTypes.FLVER
         //UNK0x18 = 0x18,
         //UNK0x19 = 0x19,
         BoneWeightsStruct = 0x1A,
+        BoneIndicesStructB = 0x2F,
+        Vector3B = 0xF0,
     }
 }

@@ -148,11 +148,11 @@ namespace MeowDSIO.DataFiles
             int meshCount = bin.ReadInt32();
             int vertexGroupCount = bin.ReadInt32();
 
-            if (vertexGroupCount != meshCount)
-                throw new NotSupportedException("This FLVER utilizes the ability to have a " +
-                    "different number of vertex groups than submeshes. This FLVER loading code " +
-                    "makes assumptions due to a lack of knowledge and attempting to load it " +
-                    "would destroy the entire universe.");
+            //if (vertexGroupCount != meshCount)
+            //    throw new NotSupportedException("This FLVER utilizes the ability to have a " +
+            //        "different number of vertex groups than submeshes. This FLVER loading code " +
+            //        "makes assumptions due to a lack of knowledge and attempting to load it " +
+            //        "would destroy the entire universe.");
 
             Header.BoundingBoxMin = bin.ReadVector3();
             Header.BoundingBoxMax = bin.ReadVector3();
@@ -291,7 +291,10 @@ namespace MeowDSIO.DataFiles
                 var mesh = new FlverSubmesh(this);
 
 
-                int isDynamicValue = bin.ReadInt32();
+                int isDynamicValue = bin.ReadByte();
+                bin.AssertByte(0);
+                bin.AssertByte(0);
+                bin.AssertByte(0);
 
                 if (isDynamicValue < 0 || isDynamicValue > 1)
                 {
@@ -524,6 +527,7 @@ namespace MeowDSIO.DataFiles
                                         switch (member.ValueType)
                                         {
                                             case FlverVertexStructMemberValueType.BoneIndicesStruct:
+                                            case FlverVertexStructMemberValueType.BoneIndicesStructB:
                                                 switch (member.Semantic)
                                                 {
                                                     case FlverVertexStructMemberSemantic.BoneIndices:
@@ -584,6 +588,7 @@ namespace MeowDSIO.DataFiles
                                                 break;
 
                                             case FlverVertexStructMemberValueType.Vector3:
+                                            case FlverVertexStructMemberValueType.Vector3B:
                                                 var value_Vector3 = bin.ReadVector3();
 
                                                 switch (member.Semantic)
@@ -598,6 +603,7 @@ namespace MeowDSIO.DataFiles
                                                 }
                                                 break;
                                             case FlverVertexStructMemberValueType.PackedVector4:
+                                            case FlverVertexStructMemberValueType.PackedVector4B:
                                                 switch (member.Semantic)
                                                 {
                                                     case FlverVertexStructMemberSemantic.Normal:

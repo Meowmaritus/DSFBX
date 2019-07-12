@@ -306,45 +306,66 @@ namespace DSFBX_GUI
                     MessageBox.Show("Dark Souls PTDE and Dark Souls Remastered imports both failed. See output log for more information.",
                         "Dark Souls PTDE and Remastered Imports Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                else if (context.Config.LaunchModelViewerAfterImport)
+                else
                 {
-                    //System.Diagnostics.Process.Start(GetModelViewerExecutable(), $"\"{context.Config.OutputBND}\"");
-                    //DSFBX.ModelViewer.App.Main();
-                    //DSFBX.ModelViewer.Program.Main(new string[] { context.Config.OutputBND });
-
-                    string[] inputFiles = null;
-
-                    if (specifiedPTDE && successPTDE)
+                    if (context.Config.LaunchModelViewerAfterImport)
                     {
-                        inputFiles = Importer
-                            .OutputtedFiles
-                            .Where(x => !x.ToUpper().EndsWith(".DCX"))
-                            .ToArray();
-                    }
-                    else if (specifiedDS1R && successDS1R)
-                    {
-                        inputFiles = Importer
-                            .OutputtedFiles
-                            .Where(x => x.ToUpper().EndsWith(".DCX"))
-                            .ToArray();
-                    }
+                        //System.Diagnostics.Process.Start(GetModelViewerExecutable(), $"\"{context.Config.OutputBND}\"");
+                        //DSFBX.ModelViewer.App.Main();
+                        //DSFBX.ModelViewer.Program.Main(new string[] { context.Config.OutputBND });
 
-                    if (inputFiles != null && inputFiles.Length > 0)
-                    {
-                        if (modelViewer != null)
+                        string[] inputFiles = null;
+
+                        if (specifiedPTDE && successPTDE)
                         {
-                            modelViewer.LoadNewModels(inputFiles);
+                            inputFiles = Importer
+                                .OutputtedFiles
+                                .Where(x => !x.ToUpper().EndsWith(".DCX"))
+                                .ToArray();
                         }
-                        else
+                        else if (specifiedDS1R && successDS1R)
                         {
-                            modelViewer = new DSFBX.ModelViewer.MyGame();
-                            modelViewer.IsQuickRunFromModelImporter = true;
-                            modelViewer.inputFiles = inputFiles;
-
-                            modelViewer.Exiting += ModelViewer_Exiting;
-
-                            modelViewer.Run(Microsoft.Xna.Framework.GameRunBehavior.Synchronous);
+                            inputFiles = Importer
+                                .OutputtedFiles
+                                .Where(x => x.ToUpper().EndsWith(".DCX"))
+                                .ToArray();
                         }
+
+                        if (inputFiles != null && inputFiles.Length > 0)
+                        {
+                            if (modelViewer != null)
+                            {
+                                modelViewer.LoadNewModels(inputFiles);
+                            }
+                            else
+                            {
+                                modelViewer = new DSFBX.ModelViewer.MyGame();
+                                modelViewer.IsQuickRunFromModelImporter = true;
+                                modelViewer.inputFiles = inputFiles;
+
+                                modelViewer.Exiting += ModelViewer_Exiting;
+
+                                modelViewer.Run(Microsoft.Xna.Framework.GameRunBehavior.Synchronous);
+                            }
+                        }
+                    }
+
+                    if (context.Config.ForceReloadCHR && checkboxForceReloadCHR.IsEnabled)
+                    {
+                        if (specifiedDS1R)
+                            ForceReloadCHR_DS1R();
+
+                        if (specifiedPTDE)
+                            ForceReloadCHR_PTDE();
+                    }
+
+                    if (context.Config.ForceReloadPARTS && checkboxForceReloadPARTS.IsEnabled)
+                    {
+                        if (specifiedDS1R)
+                            ForceReloadPARTS_DS1R();
+
+                        if (specifiedPTDE)
+                            ForceReloadPARTS_PTDE();
                     }
                 }
             }
@@ -527,6 +548,11 @@ namespace DSFBX_GUI
             CheckBoxArmorCopyMaleLegsToFemale.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
             CheckBoxArmorCopyHumanToHollow.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
             CheckBoxArmorFixBodyNormals.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
+
+            checkboxForceReloadPARTS.IsEnabled = ((ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor 
+                || ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Weapon));
+
+            checkboxForceReloadCHR.IsEnabled = (ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Character);
         }
 
         private void ButtonBrowseDS1R_Click(object sender, RoutedEventArgs e)
@@ -566,6 +592,84 @@ namespace DSFBX_GUI
                 context.Config.DarkSoulsRemasteredExePath = dlg.FileName;
                 SaveConfig();
             }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            AddRunToConsole("NOTE: If it says it can't find " +
+                "Microsoft.Xna.Framework.Content.Pipeline.FbxImporter.dll upon clicking the Import button, you need " +
+                "to download and install VC2010 Redist" +
+                " https://www.microsoft.com/en-us/download/details.aspx?id=5555", 
+                Colors.Yellow, Colors.Black);
+        }
+
+        private void ForceReloadCHR_DS1R()
+        {
+            var info = new System.Diagnostics.ProcessStartInfo()
+            {
+                FileName = "ModelReloaderDS1R\\ModelReloaderDS1R.exe",
+                Arguments = $"c{context.Config.EntityModelID:D4}",
+                CreateNoWindow = true,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+            };
+            System.Diagnostics.Process.Start(info);
+        }
+
+        private void ForceReloadPARTS_DS1R()
+        {
+            var info = new System.Diagnostics.ProcessStartInfo()
+            {
+                FileName = "ModelReloaderDS1R\\ModelReloaderDS1R.exe",
+                Arguments = $"PARTS",
+                CreateNoWindow = true,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+            };
+            System.Diagnostics.Process.Start(info);
+        }
+
+        private void ForceReloadCHR_PTDE()
+        {
+            string chrName = $"c{context.Config.EntityModelID:D4}";
+
+            if (!DarkSoulsScripting.Hook.DARKSOULS.Attached)
+            {
+                if (!DarkSoulsScripting.Hook.DARKSOULS.TryAttachToDarkSouls(out string errorMsg))
+                {
+                    MessageBox.Show($"Failed to hook to Dark Souls: PTDE\n\n{errorMsg}");
+                    return;
+                }
+            }
+
+            DarkSoulsScripting.Hook.WByte(0x013784F3, 1);
+
+            var stringAlloc = new DarkSoulsScripting.Injection.Structures.SafeRemoteHandle(chrName.Length * 2);
+
+            DarkSoulsScripting.Hook.WBytes(stringAlloc.GetHandle(), Encoding.Unicode.GetBytes(chrName));
+
+            DarkSoulsScripting.Hook.CallCustomX86((asm) =>
+            {
+                asm.Mov32(Managed.X86.X86Register32.ECX, stringAlloc.GetHandle().ToInt32());
+                asm.RawAsmBytes(new byte[] { 0x8B, 0x35, 0x44, 0xD6, 0x37, 0x01 }); //mov esi,[0x0137D644]
+                asm.Push32(Managed.X86.X86Register32.ECX);
+                asm.Call(new IntPtr(0x00E3F440));
+                asm.Retn();
+            });
+        }
+
+        private void ForceReloadPARTS_PTDE()
+        {
+            if (!DarkSoulsScripting.Hook.DARKSOULS.Attached)
+            {
+                if (!DarkSoulsScripting.Hook.DARKSOULS.TryAttachToDarkSouls(out string errorMsg))
+                {
+                    MessageBox.Show($"Failed to hook to Dark Souls: PTDE\n\n{errorMsg}");
+                    return;
+                }
+            }
+
+            var thingAddr = DarkSoulsScripting.Hook.RInt32(0x0137D644);
+            DarkSoulsScripting.Hook.WFloat(thingAddr + 0x138C, 1.0f);
+            DarkSoulsScripting.Hook.WFloat(thingAddr + 0x1390, 10.0f);
         }
     }
 }

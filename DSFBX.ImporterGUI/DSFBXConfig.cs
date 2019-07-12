@@ -13,6 +13,30 @@ namespace DSFBX_GUI
     {
         public string Manual_LastModelTypeDropdownOption = "Weapon";
 
+
+        private bool _forceReloadCHR = false;
+        public bool ForceReloadCHR
+        {
+            get => _forceReloadCHR;
+            set
+            {
+                _forceReloadCHR = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private bool _forceReloadPARTS = false;
+        public bool ForceReloadPARTS
+        {
+            get => _forceReloadPARTS;
+            set
+            {
+                _forceReloadPARTS = value;
+                RaisePropertyChanged();
+            }
+        }
+
+
         private bool _rotateNormalsBackward = false;
         public bool RotateNormalsBackward
         {

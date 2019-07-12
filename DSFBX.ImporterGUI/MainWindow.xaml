@@ -6,12 +6,12 @@
         xmlns:local="clr-namespace:DSFBX_GUI"
         mc:Ignorable="d"
         Title="DSFBX Beta v1.0.2" 
-        Width="960"
-        Height="540" 
+        Width="773"
+        Height="640" 
         MinWidth="960"
         MinHeight="400" Closing="Window_Closing"
         UseLayoutRounding="True"
-        SnapsToDevicePixels="True"
+        SnapsToDevicePixels="True" Loaded="Window_Loaded"
         >
 
     <Window.DataContext>
@@ -249,7 +249,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Margin="0,114,10,0"
-                Width="194"
+                Width="215"
                 HorizontalContentAlignment="Left"
                 VerticalContentAlignment="Center"
                 IsChecked="{Binding Config.ArmorCopyHumanToHollow}" Height="29"
@@ -262,7 +262,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Margin="0,142,10,0"
-                Width="194"
+                Width="215"
                 HorizontalContentAlignment="Left"
                 VerticalContentAlignment="Center"
                 IsChecked="{Binding Config.ArmorCopyMaleLegsToFemale}" Height="29"
@@ -275,12 +275,12 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Margin="0,168,10,0"
-                Width="194"
+                Width="215"
                 HorizontalContentAlignment="Left"
                 VerticalContentAlignment="Center"
                 IsChecked="{Binding Config.ArmorFixBodyNormals}" Height="29"
                 >
-                Fix Body Normals
+                Fix Base Mesh Human Body Vertices
             </CheckBox>
 
             <!--Import-->
@@ -495,6 +495,8 @@
             Margin="93,0,0,4" Height="24"
             VerticalContentAlignment="Center"
             />
+        <CheckBox x:Name="checkboxForceReloadCHR" IsChecked="{Binding Config.ForceReloadCHR}" Content="Force Reload Character Model After Importing" HorizontalAlignment="Right" Margin="0,0,10,8" VerticalAlignment="Bottom" Width="268" />
+        <CheckBox x:Name="checkboxForceReloadPARTS" IsChecked="{Binding Config.ForceReloadPARTS}" Content="Force Reload Player Equipment Models After Importing" HorizontalAlignment="Right" Margin="0,0,283,8" VerticalAlignment="Bottom" Width="318" />
 
     </Grid>
 

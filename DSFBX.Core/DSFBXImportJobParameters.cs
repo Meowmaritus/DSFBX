@@ -1,10 +1,8 @@
-﻿using MeowDSIO.DataFiles;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+﻿extern alias PIPE;
+
+using MeowDSIO.DataFiles;
+using PIPE::Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DSFBX
 {

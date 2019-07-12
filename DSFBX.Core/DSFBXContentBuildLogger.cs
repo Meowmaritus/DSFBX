@@ -1,9 +1,6 @@
-﻿using Microsoft.Xna.Framework.Content.Pipeline;
+﻿extern alias PIPE;
+using PIPE::Microsoft.Xna.Framework.Content.Pipeline;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DSFBX
 {

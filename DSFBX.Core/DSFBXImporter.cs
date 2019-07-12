@@ -4,7 +4,8 @@ using MeowDSIO;
 using MeowDSIO.DataFiles;
 using MeowDSIO.DataTypes.FLVER;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using PIPE::Microsoft.Xna.Framework.Content.Pipeline;
+using PIPE::Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,6 +62,7 @@ namespace DSFBX
         public readonly Solvers.NormalSolver NormalSolver;
         public readonly Solvers.OrientationSolver OrientationSolver;
         public readonly Solvers.TangentSolver TangentSolver;
+        public readonly Solvers.BoundingBoxSolver BoundingBoxSolver;
 
         private MtdBND MTDs;
 
@@ -70,6 +72,7 @@ namespace DSFBX
             NormalSolver = new Solvers.NormalSolver(this);
             OrientationSolver = new Solvers.OrientationSolver(this);
             TangentSolver = new Solvers.TangentSolver(this);
+            BoundingBoxSolver = new Solvers.BoundingBoxSolver(this);
 
             CheckResourceLoad();
         }
@@ -1027,6 +1030,8 @@ namespace DSFBX
 
             OrientationSolver.SolveOrientation(flver, ImportSkeletonPath == null);
 
+            BoundingBoxSolver.FixAllBoundingBoxes(flver);
+
             foreach (var kvp in FBX_Meshes)
             {
                 flverSubmeshNameMap.Add(kvp.Key, kvp.Value.Name);
@@ -1085,16 +1090,18 @@ namespace DSFBX
                 }
             }
 
-            if (entityBnd.Models.Count <= EntityModelIndex)
+            while (entityBnd.Models.Count <= EntityModelIndex)
             {
-                PrintError($"Entity Model BND \"{EntityBndPath}\" " +
-                    $"does not include a model with index {EntityModelIndex}.");
-                return false;
+                entityBnd.Models.Add(new MeowDSIO.DataTypes.EntityBND.EntityModel());
+                //PrintError($"Entity Model BND \"{EntityBndPath}\" " +
+                //    $"does not include a model with index {EntityModelIndex}.");
+                
+                //return false;
             }
 
             Print($"Importing FBX into entity \"{EntityBndPath}\"...\n");
 
-            var fbxImporter = new Microsoft.Xna.Framework.Content.Pipeline.FbxImporter();
+            var fbxImporter = new FbxImporter();
             var context = new DSFBXContentImporterContext();
             var fbx = fbxImporter.Import(FbxPath, context);
 
@@ -1366,11 +1373,15 @@ namespace DSFBX
 
             OnFlverGenerated(entityBnd.Models[EntityModelIndex].Mesh);
 
-            foreach (var entityModel in entityBnd.Models)
-            {
-                //Don't use the separate texture file thing fatcat
-                entityModel.CHRTPFBHD = null;
-            }
+            GeneratePlaceholderLODs(entityBnd.Models[EntityModelIndex].Mesh);
+            entityBnd.Models[EntityModelIndex].CHRTPFBHD = null;
+
+            //foreach (var entityModel in entityBnd.Models)
+            //{
+            //    GeneratePlaceholderLODs(entityModel.Mesh);
+            //    //Don't use the separate texture file thing fatcat
+            //    entityModel.CHRTPFBHD = null;
+            //}
 
             if (IsRemaster)
             {
@@ -1384,15 +1395,107 @@ namespace DSFBX
             return true;
         }
 
+        private void GeneratePlaceholderLODs(FLVER flver)
+        {
+            foreach (var submesh in flver.Submeshes)
+            {
+                var newFacesetsToAdd = new List<FlverFaceSet>();
+                foreach (var faceset in submesh.FaceSets)
+                {
+                    var lod1 = new FlverFaceSet()
+                    {
+                        CullBackfaces = faceset.CullBackfaces,
+                        Flags = FlverFaceSetFlags.LOD1,
+                        IsTriangleStrip = faceset.IsTriangleStrip,
+                        UnknownByte1 = faceset.UnknownByte1,
+                        UnknownByte2 = faceset.UnknownByte2,
+                        UnknownInt1 = faceset.UnknownInt1,
+                        UnknownInt2 = faceset.UnknownInt2,
+                        UnknownInt3 = faceset.UnknownInt3,
+                    };
+
+                    var lod2 = new FlverFaceSet()
+                    {
+                        CullBackfaces = faceset.CullBackfaces,
+                        Flags = FlverFaceSetFlags.LOD1,
+                        IsTriangleStrip = faceset.IsTriangleStrip,
+                        UnknownByte1 = faceset.UnknownByte1,
+                        UnknownByte2 = faceset.UnknownByte2,
+                        UnknownInt1 = faceset.UnknownInt1,
+                        UnknownInt2 = faceset.UnknownInt2,
+                        UnknownInt3 = faceset.UnknownInt3,
+                    };
+
+                    var mblur = new FlverFaceSet()
+                    {
+                        CullBackfaces = faceset.CullBackfaces,
+                        Flags = FlverFaceSetFlags.MotionBlurModel,
+                        IsTriangleStrip = faceset.IsTriangleStrip,
+                        UnknownByte1 = faceset.UnknownByte1,
+                        UnknownByte2 = faceset.UnknownByte2,
+                        UnknownInt1 = faceset.UnknownInt1,
+                        UnknownInt2 = faceset.UnknownInt2,
+                        UnknownInt3 = faceset.UnknownInt3,
+                    };
+
+                    var mblurlod1 = new FlverFaceSet()
+                    {
+                        CullBackfaces = faceset.CullBackfaces,
+                        Flags = FlverFaceSetFlags.LOD1 | FlverFaceSetFlags.MotionBlurModel,
+                        IsTriangleStrip = faceset.IsTriangleStrip,
+                        UnknownByte1 = faceset.UnknownByte1,
+                        UnknownByte2 = faceset.UnknownByte2,
+                        UnknownInt1 = faceset.UnknownInt1,
+                        UnknownInt2 = faceset.UnknownInt2,
+                        UnknownInt3 = faceset.UnknownInt3,
+                    };
+
+                    var mblurlod2 = new FlverFaceSet()
+                    {
+                        CullBackfaces = faceset.CullBackfaces,
+                        Flags = FlverFaceSetFlags.LOD2 | FlverFaceSetFlags.MotionBlurModel,
+                        IsTriangleStrip = faceset.IsTriangleStrip,
+                        UnknownByte1 = faceset.UnknownByte1,
+                        UnknownByte2 = faceset.UnknownByte2,
+                        UnknownInt1 = faceset.UnknownInt1,
+                        UnknownInt2 = faceset.UnknownInt2,
+                        UnknownInt3 = faceset.UnknownInt3,
+                    };
+
+                    foreach (var vertIndex in faceset.VertexIndices)
+                    {
+                        lod1.VertexIndices.Add(vertIndex);
+                        lod2.VertexIndices.Add(vertIndex);
+                        mblur.VertexIndices.Add(vertIndex);
+                        mblurlod1.VertexIndices.Add(vertIndex);
+                        mblurlod2.VertexIndices.Add(vertIndex);
+                    }
+
+                    newFacesetsToAdd.Add(lod1);
+                    newFacesetsToAdd.Add(lod2);
+                    newFacesetsToAdd.Add(mblur);
+                    newFacesetsToAdd.Add(mblurlod1);
+                    newFacesetsToAdd.Add(mblurlod2);
+                }
+
+                foreach (var lod in newFacesetsToAdd)
+                {
+                    submesh.FaceSets.Add(lod);
+                }
+            }
+        }
+
         private void FixBodyNormals(FLVER flver)
         {
             foreach (var sm in flver.Submeshes)
             {
                 var submeshName = sm.GetName();
-                if (sm.Material.MTDName == "Ps_Body[DSB]")
+                Print($"Checking if submesh '{submeshName}' is part of human body base mesh (MTD '{sm.Material.MTDName}')...");
+                var bodyPartType = submeshName.Split('|')[0].Trim();
+                if (sm.Material.MTDName.ToUpper().Trim() == "PS_BODY[DSB].MTD")
                 {
-                    Print($"Attempting to fix human body submesh '{submeshName}', targeting body part type '{sm.Material.Name}'...");
-                    var fixResults = HumanBodyFixer.FixBodyPiece(sm, sm.Material.Name, out string possibleError);
+                    Print($"Attempting to fix human body submesh '{submeshName}', targeting body part type '{bodyPartType}'...");
+                    var fixResults = HumanBodyFixer.FixBodyPiece(sm, bodyPartType, out string possibleError);
                     if (possibleError != null)
                     {
                         PrintError(possibleError);
@@ -1400,7 +1503,7 @@ namespace DSFBX
                     else
                     {
                         if (fixResults.VertsFixed > 0)
-                            Print($"Matched {fixResults.VertsFixed} / {fixResults.TotalSourceVerts} vertices in submesh '{submeshName}' to the original '{sm.Material.Name}' mesh and fixed normals, tangents, and bone weights...");
+                            Print($"Matched {fixResults.VertsFixed} / {sm.Vertices.Count} vertices in submesh '{submeshName}' to the original '{bodyPartType}' mesh (which has {fixResults.TotalSourceVerts} verts total) and fixed normals, tangents, and bone weights...");
                         else
                             PrintWarning($"Unable to match any vertices in submesh '{submeshName}' with the originals in '{sm.Material.Name}'.");
                     }
@@ -1694,22 +1797,22 @@ namespace DSFBX
 
                 bool isSuccess = false;
 
-                try
-                {
+                //try
+                //{
                     isSuccess = Import();
-                }
-                catch (Exception ex)
-                {
-                    PrintError($"Exception encountered while attempting to import:\n\n{ex}");
+                //}
+                //catch (Exception ex)
+                //{
+                //    PrintError($"Exception encountered while attempting to import:\n\n{ex}");
 
-                    //if (File.Exists(EntityBndPath + ".bak"))
-                    //    File.Copy(EntityBndPath + ".bak", EntityBndPath, true);
-                    //else
-                    //    PrintError("Unfortunately, the automatically-generated " +
-                    //        "backup file was mysteriously gone and you are now most likely left " +
-                    //        "with an empty entity BND file (please notify me, " +
-                    //        "Meowmaritus, if you ever see this error message).");
-                }
+                //    //if (File.Exists(EntityBndPath + ".bak"))
+                //    //    File.Copy(EntityBndPath + ".bak", EntityBndPath, true);
+                //    //else
+                //    //    PrintError("Unfortunately, the automatically-generated " +
+                //    //        "backup file was mysteriously gone and you are now most likely left " +
+                //    //        "with an empty entity BND file (please notify me, " +
+                //    //        "Meowmaritus, if you ever see this error message).");
+                //}
 
                 OnImportEnding();
 

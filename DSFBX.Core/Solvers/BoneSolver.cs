@@ -3,12 +3,9 @@
 using MeowDSIO.DataFiles;
 using MeowDSIO.DataTypes.FLVER;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using PIPE::Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using FbxPipeline = PIPE::Microsoft.Xna.Framework;
 
@@ -243,9 +240,9 @@ namespace DSFBX.Solvers
                         );
                 var thisScale = new FbxPipeline.Vector3(newBone.Scale.X, newBone.Scale.Y, newBone.Scale.Z);
 
-                var upPoint = FbxPipeline.Vector3.Normalize(boneContent.AbsoluteTransform.Forward) * 0.1f * thisScale;
+                var upPoint = FbxPipeline.Vector3.Normalize(boneContent.AbsoluteTransform.Forward) * 0.1801817f * thisScale * new FbxPipeline.Vector3(1, 1, 1);
 
-                var forwardPoint = FbxPipeline.Vector3.Normalize(boneContent.AbsoluteTransform.Up) * 0.05f * thisScale;
+                var forwardPoint = FbxPipeline.Vector3.Normalize(boneContent.AbsoluteTransform.Up) * 0.07719432f * thisScale;
 
                 dmy.Row2 = new Vector3(upPoint.X, upPoint.Y, upPoint.Z);
                 dmy.Row3 = new Vector3(forwardPoint.X, forwardPoint.Y, forwardPoint.Z);

@@ -21,14 +21,14 @@ namespace DSFBX
             { "BD_F", "BD_F_0000.partsbnd" },
             { "AM_F", "AM_F_0000.partsbnd" },
             { "LG_F", "LG_F_0000.partsbnd" },
-            { "HD_M_Hollow", "FC_M_M_0000.partsbnd" },
-            { "BD_M_Hollow", "BD_M_M_0000.partsbnd" },
-            { "AM_M_Hollow", "AM_M_M_0000.partsbnd" },
-            { "LG_M_Hollow", "LG_M_M_0000.partsbnd" },
-            { "HD_F_Hollow", "FC_F_M_0000.partsbnd" },
-            { "BD_F_Hollow", "BD_F_M_0000.partsbnd" },
-            { "AM_F_Hollow", "AM_F_M_0000.partsbnd" },
-            { "LG_F_Hollow", "LG_F_M_0000.partsbnd" },
+            { "HD_M_Hollow", "FC_M_0000_M.partsbnd" },
+            { "BD_M_Hollow", "BD_M_0000_M.partsbnd" },
+            { "AM_M_Hollow", "AM_M_0000_M.partsbnd" },
+            { "LG_M_Hollow", "LG_M_0000_M.partsbnd" },
+            { "HD_F_Hollow", "FC_F_0000_M.partsbnd" },
+            { "BD_F_Hollow", "BD_F_0000_M.partsbnd" },
+            { "AM_F_Hollow", "AM_F_0000_M.partsbnd" },
+            { "LG_F_Hollow", "LG_F_0000_M.partsbnd" },
         };
 
         private static Dictionary<string, FLVER> HumanBodyFLVERs 
@@ -56,7 +56,9 @@ namespace DSFBX
         {
             return IsFloatCloseEnough(v.Position.X, closeTo.Position.X, 0.001f)
                 && IsFloatCloseEnough(v.Position.Y, closeTo.Position.Y, 0.001f)
-                && IsFloatCloseEnough(v.Position.Z, closeTo.Position.Z, 0.001f);
+                && IsFloatCloseEnough(v.Position.Z, closeTo.Position.Z, 0.001f)
+                && IsFloatCloseEnough(v.UVs[0].U, closeTo.UVs[0].U, 0.001f)
+                && IsFloatCloseEnough(v.UVs[0].U, closeTo.UVs[0].U, 0.001f); ;
         }
 
         public static (int VertsFixed, int TotalSourceVerts) FixBodyPiece(FlverSubmesh mesh, string bodyPieceType, out string possibleError)
@@ -64,7 +66,7 @@ namespace DSFBX
             possibleError = null;
             if (!MaterialToEmbeddedFlverMap.ContainsKey(bodyPieceType))
             {
-                possibleError = "Invalid body piece type: '{bodyPieceType}' in material name of this body part. Below is a list of valid types:" +
+                possibleError = $"Invalid body piece type: '{bodyPieceType}' in material name of this body part. Below is a list of valid types:" +
                     " -HD_M\n" +
                     " -BD_M\n" +
                     " -AM_M\n" +
@@ -94,33 +96,55 @@ namespace DSFBX
             int numberOfVertsFixed = 0;
             int totalVerts = possibleVertices.Count;
 
+            //List<FlverVertex> possibleVertsCheckedOff = new List<FlverVertex>();
+
             foreach (var v in mesh.Vertices)
             {
+                //(FlverVertex Vert, float Dist) closestDistance = (null, float.MaxValue);
+
+                FlverVertex closest = null;
+
                 foreach (var possible in possibleVertices)
                 {
+                    //float dist = ((Vector3)(possible.Position - v.Position)).LengthSquared();
+
+                    //if (dist < closestDistance.Dist)
+                    //    closestDistance = (possible, dist);
+
                     if (CheckIfVertexMatches(v, possible))
                     {
-                        v.Position = possible.Position;
-                        v.Normal = possible.Normal;
-                        v.BiTangent = possible.BiTangent;
+                        closest = possible;
 
-                        string targetBoneNameA = flver.GetBoneFromIndex(possible.BoneIndices.A)?.Name;
-                        string targetBoneNameB = flver.GetBoneFromIndex(possible.BoneIndices.B)?.Name;
-                        string targetBoneNameC = flver.GetBoneFromIndex(possible.BoneIndices.C)?.Name;
-                        string targetBoneNameD = flver.GetBoneFromIndex(possible.BoneIndices.D)?.Name;
+                        v.Position = closest.Position;
+                        v.Normal = closest.Normal;
+                        v.BiTangent = closest.BiTangent;
+
+                        string targetBoneNameA = closest.BoneIndices.A >= 0 ? flver.GetBoneFromIndex(flver.Submeshes[0].BoneIndices[closest.BoneIndices.A])?.Name : null;
+                        string targetBoneNameB = closest.BoneIndices.B >= 0 ? flver.GetBoneFromIndex(flver.Submeshes[0].BoneIndices[closest.BoneIndices.B])?.Name : null;
+                        string targetBoneNameC = closest.BoneIndices.C >= 0 ? flver.GetBoneFromIndex(flver.Submeshes[0].BoneIndices[closest.BoneIndices.C])?.Name : null;
+                        string targetBoneNameD = closest.BoneIndices.D >= 0 ? flver.GetBoneFromIndex(flver.Submeshes[0].BoneIndices[closest.BoneIndices.D])?.Name : null;
 
                         v.BoneIndices.A = mesh.FindOrAddBoneIndex(targetBoneNameA);
                         v.BoneIndices.B = mesh.FindOrAddBoneIndex(targetBoneNameB);
                         v.BoneIndices.C = mesh.FindOrAddBoneIndex(targetBoneNameC);
                         v.BoneIndices.D = mesh.FindOrAddBoneIndex(targetBoneNameD);
 
-                        v.BoneWeights = possible.BoneWeights;
+                        v.BoneWeights = closest.BoneWeights;
+
+                        v.UVs = closest.UVs;
 
                         numberOfVertsFixed++;
-
-                        possibleVertices.Remove(possible);
                     }
                 }
+
+                
+
+                //if (possibleVertsCheckedOff.Count > 0)
+                //{
+                //    foreach (var checkoff in possibleVertsCheckedOff)
+                //        possibleVertices.Remove(checkoff);
+                //    possibleVertsCheckedOff.Clear();
+                //}
             }
 
             return (numberOfVertsFixed, totalVerts);

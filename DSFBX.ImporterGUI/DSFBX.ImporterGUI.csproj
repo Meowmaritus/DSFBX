@@ -15,7 +15,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -42,21 +42,6 @@
   <ItemGroup>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <HintPath>..\packages\Xna_Content_Pipeline.1.0.0\lib\Microsoft.Xna.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <HintPath>..\packages\Xna_Content_Pipeline.1.0.0\lib\Microsoft.Xna.Framework.Content.Pipeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.FBXImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <HintPath>..\packages\Xna_Content_Pipeline.1.0.0\lib\Microsoft.Xna.Framework.Content.Pipeline.FBXImporter.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <HintPath>..\packages\Xna_Content_Pipeline.1.0.0\lib\Microsoft.Xna.Framework.Graphics.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Video, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
-      <HintPath>..\packages\Xna_Content_Pipeline.1.0.0\lib\Microsoft.Xna.Framework.Video.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.6.0.1625\lib\net40\MonoGame.Framework.dll</HintPath>
@@ -127,6 +112,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DarkSoulsScripting\DarkSoulsScripting\DarkSoulsScripting.csproj">
+      <Project>{7d25328e-c261-4315-8131-0cf96153a357}</Project>
+      <Name>DarkSoulsScripting</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DSFBX.Core\DSFBX.Core.csproj">
       <Project>{f55ed308-5e05-424b-8d45-923bb2271539}</Project>
       <Name>DSFBX.Core</Name>
@@ -139,14 +128,10 @@
       <Project>{4ad69470-8146-4d20-94f0-da9844eee5a2}</Project>
       <Name>MeowDSIO</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="D3DX9_41.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="X3DAudio1_7.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\ModelReloaderDS1R\ModelReloaderDS1R.csproj">
+      <Project>{b8eaa6f9-4818-4a08-b7be-b317f5d8b0e6}</Project>
+      <Name>ModelReloaderDS1R</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

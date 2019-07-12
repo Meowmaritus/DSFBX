@@ -91,9 +91,12 @@ namespace DSFBX.ModelViewer
 
         public List<int> DummyIDs = new List<int>();
 
+        public List<FlverDummy> Dummies = new List<FlverDummy>();
+
         public List<Microsoft.Xna.Framework.Color> DummyColors = new List<Microsoft.Xna.Framework.Color>();
 
         public List<string> BoneNames = new List<string>();
+        public List<FlverBone> ActualBones = new List<FlverBone>();
         public List<string> SubmeshNames = new List<string>();
         public List<string> SubmeshMaterialNames = new List<string>();
         public List<FlverVector3> BoneScales = new List<FlverVector3>();
@@ -502,6 +505,8 @@ namespace DSFBX.ModelViewer
         {
             var sb = new StringBuilder();
 
+            var faceSetFlagValues = (FlverFaceSetFlags[])Enum.GetValues(typeof(FlverFaceSetFlags));
+
             sb.AppendLine($"Model: {ModelName}");
             sb.AppendLine();
             sb.AppendLine("Submeshes:");
@@ -522,6 +527,21 @@ namespace DSFBX.ModelViewer
                 {
                     sb.AppendLine($"            {p.ToString()}");
                 }
+
+                sb.AppendLine($"        {sm.FaceSets.Count} Face Sets. Flags of Face Sets:");
+
+                for (int j = 0; j < sm.FaceSets.Count; j++)
+                {
+                    List<FlverFaceSetFlags> flagsThisThingHas = new List<FlverFaceSetFlags>();
+                    foreach (var flag in faceSetFlagValues)
+                    {
+                        if ((sm.FaceSets[j].Flags & flag) != 0)
+                        {
+                            flagsThisThingHas.Add(flag);
+                        }
+                    }
+                    sb.AppendLine($"            Face Set {(j + 1)}: {string.Join(", ", flagsThisThingHas)}");
+                }
             }
             sb.AppendLine();
             sb.AppendLine("Bones:");
@@ -532,26 +552,23 @@ namespace DSFBX.ModelViewer
                 {
                     sb.Append("  ");
                 }
-                sb.AppendLine("-" + BoneNames[i]);
+                sb.AppendLine("-" + BoneNames[i] + $"[POS<{ActualBones[i].Translation.X}, {ActualBones[i].Translation.Y}, {ActualBones[i].Translation.Z}> " +
+                    $"ROT<{(ActualBones[i].EulerRadian.X / Math.PI * 180)}°, {(ActualBones[i].EulerRadian.Y / Math.PI * 180)}°, {(ActualBones[i].EulerRadian.Z / Math.PI * 180)}°> " +
+                    $"SCL<{ActualBones[i].Scale.X}, {ActualBones[i].Scale.Y}, {ActualBones[i].Scale.Z}>]" +
+                    (ActualBones[i].BoundingBoxMin != null ? $"BBm<{ActualBones[i].BoundingBoxMin.X}, {ActualBones[i].BoundingBoxMin.Y}, {ActualBones[i].BoundingBoxMin.Z}>" : "BBm<NULL>") +
+                    (ActualBones[i].BoundingBoxMax != null ? $"BBM<{ActualBones[i].BoundingBoxMax.X}, {ActualBones[i].BoundingBoxMax.Y}, {ActualBones[i].BoundingBoxMax.Z}>" : "BBM<NULL>"));
             }
 
             sb.AppendLine();
-            sb.Append("Included dummy IDs:");
+            sb.AppendLine("Dummies:");
 
-            int h = 9000;
-            foreach (var dmy in DummyIDs)
+            foreach (var dmy in Dummies)
             {
-                if (h >= 8)
-                {
-                    h = 0;
-                    sb.AppendLine();
-                    sb.Append("   ");
-                }
-                if (h > 0)
-                    sb.Append(", ");
-                sb.Append(dmy);
-                h++;
-
+                sb.AppendLine($"    {dmy.TypeID} [ParentNode:\"{(dmy.ParentBoneIndex >= 0 ? BoneNames[dmy.ParentBoneIndex] : "<None>")}\" " +
+                    $"FollowBone:\"{(dmy.SomeSortOfParentIndex >= 0 ? BoneNames[dmy.SomeSortOfParentIndex] : "<None>")}\" " +
+                    $"POS:<{dmy.Position.X}, {dmy.Position.Y}, {dmy.Position.Z}>" +
+                    $"UP:<{dmy.Row2.X}, {dmy.Row2.Y}, {dmy.Row2.Z}>" +
+                    $"FWD:<{dmy.Row3.X}, {dmy.Row3.Y}, {dmy.Row3.Z}>]");
             }
 
             sb.AppendLine();

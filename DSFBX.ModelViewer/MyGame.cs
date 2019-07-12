@@ -254,6 +254,7 @@ namespace DSFBX.ModelViewer
         private bool currentMouseClick = false;
         private bool oldMouseClick = false;
         private List<int> DummyIdList;
+        private List<FlverDummy> DummyList;
 
         private bool prev_isToggleAllSubmeshKeyPressed = false;
         private bool prev_isToggleAllDummyKeyPressed = false;
@@ -769,9 +770,11 @@ namespace DSFBX.ModelViewer
                 }
 
                 DummyIdList = new List<int>();
+                DummyList = new List<FlverDummy>();
 
                 foreach (var dmy in flvers[f].Dummies)
                 {
+                    DummyList.Add(dmy);
                     if (!DummyIdList.Contains(dmy.TypeID))
                         DummyIdList.Add(dmy.TypeID);
                 }
@@ -983,8 +986,10 @@ namespace DSFBX.ModelViewer
         private void CreateModelListWindow()
         {
             ModelListWindow.DummyIDs = DummyIdList;
+            ModelListWindow.Dummies = DummyList;
             ModelListWindow.DummyColors = dmyColorMapping.Values.ToList();
 
+            ModelListWindow.ActualBones = new List<FlverBone>();
             ModelListWindow.BoneNames = new List<string>();
             ModelListWindow.BoneScales = new List<FlverVector3>();
             ModelListWindow.BoneIndents = new List<int>();
@@ -998,6 +1003,8 @@ namespace DSFBX.ModelViewer
             {
                 ModelListWindow.BoneNames.Add(flvers[0].Bones[i].Name);
                 ModelListWindow.BoneScales.Add(flvers[0].Bones[i].Scale);
+
+                ModelListWindow.ActualBones.Add(flvers[0].Bones[i]);
 
                 int indent = 0;
 
