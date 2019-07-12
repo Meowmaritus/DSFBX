@@ -1797,22 +1797,22 @@ namespace DSFBX
 
                 bool isSuccess = false;
 
-                //try
-                //{
+                try
+                {
                     isSuccess = Import();
-                //}
-                //catch (Exception ex)
-                //{
-                //    PrintError($"Exception encountered while attempting to import:\n\n{ex}");
+                }
+                catch (Exception ex)
+                {
+                    PrintError($"Exception encountered while attempting to import:\n\n{ex}");
 
-                //    //if (File.Exists(EntityBndPath + ".bak"))
-                //    //    File.Copy(EntityBndPath + ".bak", EntityBndPath, true);
-                //    //else
-                //    //    PrintError("Unfortunately, the automatically-generated " +
-                //    //        "backup file was mysteriously gone and you are now most likely left " +
-                //    //        "with an empty entity BND file (please notify me, " +
-                //    //        "Meowmaritus, if you ever see this error message).");
-                //}
+                    //if (File.Exists(EntityBndPath + ".bak"))
+                    //    File.Copy(EntityBndPath + ".bak", EntityBndPath, true);
+                    //else
+                    //    PrintError("Unfortunately, the automatically-generated " +
+                    //        "backup file was mysteriously gone and you are now most likely left " +
+                    //        "with an empty entity BND file (please notify me, " +
+                    //        "Meowmaritus, if you ever see this error message).");
+                }
 
                 OnImportEnding();
 

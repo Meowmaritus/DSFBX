@@ -14,7 +14,7 @@ namespace DSFBX_GUI
         public string Manual_LastModelTypeDropdownOption = "Weapon";
 
 
-        private bool _forceReloadCHR = false;
+        private bool _forceReloadCHR = true;
         public bool ForceReloadCHR
         {
             get => _forceReloadCHR;
@@ -25,7 +25,7 @@ namespace DSFBX_GUI
             }
         }
 
-        private bool _forceReloadPARTS = false;
+        private bool _forceReloadPARTS = true;
         public bool ForceReloadPARTS
         {
             get => _forceReloadPARTS;

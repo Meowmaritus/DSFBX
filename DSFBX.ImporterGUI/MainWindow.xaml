@@ -28,9 +28,9 @@
             Margin="0,4,10,0"
             FontSize="12"
             FontWeight="SemiBold"
-            Foreground="White"
+            Foreground="Black"
             Height="20" Click="ButtonDONATE_Click"
-            Background="Green"
+            Background="LightGreen"
             />
 
         <Grid
@@ -498,8 +498,8 @@
             Margin="93,0,0,4" Height="24"
             VerticalContentAlignment="Center"
             />
-        <CheckBox x:Name="checkboxForceReloadCHR" IsChecked="{Binding Config.ForceReloadCHR}" Content="Force Reload Character Model After Importing" HorizontalAlignment="Right" Margin="0,0,10,8" VerticalAlignment="Bottom" Width="268" />
-        <CheckBox x:Name="checkboxForceReloadPARTS" IsChecked="{Binding Config.ForceReloadPARTS}" Content="Force Reload Player Equipment Models After Importing" HorizontalAlignment="Right" Margin="0,0,283,8" VerticalAlignment="Bottom" Width="318" />
+        <CheckBox x:Name="checkboxForceReloadCHR" IsChecked="{Binding Config.ForceReloadCHR}" IsEnabled="False" Content="Force Reload Character Model After Importing" HorizontalAlignment="Right" Margin="0,0,10,8" VerticalAlignment="Bottom" Width="268" />
+        <CheckBox x:Name="checkboxForceReloadPARTS" IsChecked="{Binding Config.ForceReloadPARTS}" IsEnabled="False" Content="Force Reload Player Equipment Models After Importing" HorizontalAlignment="Right" Margin="0,0,283,8" VerticalAlignment="Bottom" Width="318" />
 
     </Grid>
 
