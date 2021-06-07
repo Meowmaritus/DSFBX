@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DSFBX_GUI"
         mc:Ignorable="d"
-        Title="DSFBX Beta v1.1" 
+        Title="DSFBX Beta v1.2" 
         Width="773"
         Height="640" 
         MinWidth="960"
@@ -437,7 +437,6 @@
                     Rotate Normals <LineBreak/>(If your lighting looks bad try this first)
                 </TextBlock>
             </CheckBox>
-            
         </Grid>
 
         <!--Output-->

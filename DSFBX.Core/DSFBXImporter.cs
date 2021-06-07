@@ -1561,18 +1561,6 @@ namespace DSFBX
                 case DSFBXArmorSlot.LG_A: return $"LG_A_{ModelIDStr}";
                 case DSFBXArmorSlot.LG_M: return $"LG_M_{ModelIDStr}";
                 case DSFBXArmorSlot.LG_F: return $"LG_F_{ModelIDStr}";
-                case DSFBXArmorSlot.HD_A_Hollow: return $"HD_A_{ModelIDStr}_M";
-                case DSFBXArmorSlot.HD_M_Hollow: return $"HD_M_{ModelIDStr}_M";
-                case DSFBXArmorSlot.HD_F_Hollow: return $"HD_F_{ModelIDStr}_M";
-                case DSFBXArmorSlot.BD_A_Hollow: return $"BD_A_{ModelIDStr}_M";
-                case DSFBXArmorSlot.BD_M_Hollow: return $"BD_M_{ModelIDStr}_M";
-                case DSFBXArmorSlot.BD_F_Hollow: return $"BD_F_{ModelIDStr}_M";
-                case DSFBXArmorSlot.AM_A_Hollow: return $"AM_A_{ModelIDStr}_M";
-                case DSFBXArmorSlot.AM_M_Hollow: return $"AM_M_{ModelIDStr}_M";
-                case DSFBXArmorSlot.AM_F_Hollow: return $"AM_F_{ModelIDStr}_M";
-                case DSFBXArmorSlot.LG_A_Hollow: return $"LG_A_{ModelIDStr}_M";
-                case DSFBXArmorSlot.LG_M_Hollow: return $"LG_M_{ModelIDStr}_M";
-                case DSFBXArmorSlot.LG_F_Hollow: return $"LG_F_{ModelIDStr}_M";
             }
             return null;
         }

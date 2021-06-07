@@ -708,6 +708,5 @@ namespace DSFBX_GUI
         {
             System.Diagnostics.Process.Start("https://www.paypal.me/Meowmaritus");
         }
-
     }
 }
