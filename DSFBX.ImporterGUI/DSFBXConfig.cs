@@ -13,6 +13,7 @@ namespace DSFBX_GUI
     {
         public string Manual_LastModelTypeDropdownOption = "Weapon";
 
+        public string Manual_LastArmorExtensionTypeDropdownOption = "Human";
 
         private bool _forceReloadCHR = true;
         public bool ForceReloadCHR
