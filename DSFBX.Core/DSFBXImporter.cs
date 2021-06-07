@@ -45,7 +45,6 @@ namespace DSFBX
         public Vector3 SceneRotation = Vector3.Zero;
 
         public string ArmorExtension = "";
-        //public bool ArmorCopyHumanToHollow = true;
         public bool ArmorCopyMaleLegsToFemale = true;
         public bool ArmorFixBodyNormals = true;
 
@@ -1689,22 +1688,6 @@ namespace DSFBX
 
                         Print($"Saved armor slot {kvp.Key.ToString()} model to armor model \"{outputBnd}\".");
 
-                        //if (ArmorCopyHumanToHollow && !GetArmorModelName(kvp.Key).EndsWith("_M"))
-                        //{
-                        //    entityBnd.FilePath = outputBnd = GetModelPath(GetArmorModelName(kvp.Key) + "_M");
-                        //    if (IsRemaster)
-                        //    {
-                        //        DataFile.SaveToDcxFile(entityBnd, outputBnd);
-                        //    }
-                        //    else
-                        //    {
-                        //        DataFile.SaveToFile(entityBnd, outputBnd);
-                        //    }
-                        //    OutputtedFiles.Add(outputBnd);
-
-                        //    Print($"[Copy Human -> Hollow]\nSaved armor slot {kvp.Key.ToString()} model to armor model \"{outputBnd}\".");
-                        //}
-
                         if (ArmorCopyMaleLegsToFemale && kvp.Key == DSFBXArmorSlot.LG_M)
                         {
                             entityBnd.FilePath = outputBnd = GetModelPath(GetArmorModelName(DSFBXArmorSlot.LG_F) + ArmorExtension);
@@ -1720,21 +1703,6 @@ namespace DSFBX
 
                             Print($"[Copy Male Legs -> Female Legs]\nSaved armor slot {kvp.Key.ToString()} model to armor model \"{outputBnd}\".");
 
-                            //if (ArmorCopyHumanToHollow)
-                            //{
-                            //    entityBnd.FilePath = outputBnd = GetModelPath(GetArmorModelName(DSFBXArmorSlot.LG_F_Hollow));
-                            //    if (IsRemaster)
-                            //    {
-                            //        DataFile.SaveToDcxFile(entityBnd, outputBnd);
-                            //    }
-                            //    else
-                            //    {
-                            //        DataFile.SaveToFile(entityBnd, outputBnd);
-                            //    }
-                            //    OutputtedFiles.Add(outputBnd);
-
-                            //    Print($"[Copy Male Legs -> Female Legs & Copy Human -> Hollow]\nSaved armor slot {kvp.Key.ToString()} model to armor model \"{outputBnd}\".");
-                            //}
                         }
 
 

@@ -260,7 +260,6 @@ namespace DSFBX_GUI
                 {
                     Importer.ArmorExtension = ArmorExtension.Dict[ArmorExtensionTypeDropdown.SelectedItem.ToString()];
                 }
-                //Importer.ArmorCopyHumanToHollow = context.Config.ArmorCopyHumanToHollow;
                 Importer.ArmorCopyMaleLegsToFemale = context.Config.ArmorCopyMaleLegsToFemale;
                 Importer.ArmorFixBodyNormals = context.Config.ArmorFixBodyNormals;
                 Importer.RotateNormalsBackward = context.Config.RotateNormalsBackward;
@@ -578,7 +577,6 @@ namespace DSFBX_GUI
         {
             CheckBoxArmorCopyMaleLegsToFemale.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
             ArmorExtensionTypeDropdown.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
-            //CheckBoxArmorCopyHumanToHollow.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
             CheckBoxArmorFixBodyNormals.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
 
             checkboxForceReloadPARTS.IsEnabled = ((ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor 

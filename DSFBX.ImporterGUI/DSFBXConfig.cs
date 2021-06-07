@@ -60,17 +60,6 @@ namespace DSFBX_GUI
             }
         }
 
-        private bool _armorCopyHumanToHollow = true;
-        public bool ArmorCopyHumanToHollow
-        {
-            get => _armorCopyHumanToHollow;
-            set
-            {
-                _armorCopyHumanToHollow = value;
-                RaisePropertyChanged();
-            }
-        }
-
         private bool _armorCopyMaleLegsToFemale = true;
         public bool ArmorCopyMaleLegsToFemale
         {
