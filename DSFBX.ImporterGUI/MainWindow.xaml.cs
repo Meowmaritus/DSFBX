@@ -577,6 +577,7 @@ namespace DSFBX_GUI
         private void ModelTypeDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CheckBoxArmorCopyMaleLegsToFemale.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
+            ArmorExtensionTypeDropdown.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
             //CheckBoxArmorCopyHumanToHollow.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
             CheckBoxArmorFixBodyNormals.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
 
@@ -707,5 +708,6 @@ namespace DSFBX_GUI
         {
             System.Diagnostics.Process.Start("https://www.paypal.me/Meowmaritus");
         }
+
     }
 }
