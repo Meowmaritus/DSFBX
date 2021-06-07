@@ -1573,18 +1573,6 @@ namespace DSFBX
                 case DSFBXArmorSlot.LG_A_Hollow: return $"LG_A_{ModelIDStr}_M";
                 case DSFBXArmorSlot.LG_M_Hollow: return $"LG_M_{ModelIDStr}_M";
                 case DSFBXArmorSlot.LG_F_Hollow: return $"LG_F_{ModelIDStr}_M";
-                case DSFBXArmorSlot.HD_A_Lowpoly: return $"HD_A_{ModelIDStr}_L";
-                case DSFBXArmorSlot.HD_M_Lowpoly: return $"HD_M_{ModelIDStr}_L";
-                case DSFBXArmorSlot.HD_F_Lowpoly: return $"HD_F_{ModelIDStr}_L";
-                case DSFBXArmorSlot.BD_A_Lowpoly: return $"BD_A_{ModelIDStr}_L";
-                case DSFBXArmorSlot.BD_M_Lowpoly: return $"BD_M_{ModelIDStr}_L";
-                case DSFBXArmorSlot.BD_F_Lowpoly: return $"BD_F_{ModelIDStr}_L";
-                case DSFBXArmorSlot.AM_A_Lowpoly: return $"AM_A_{ModelIDStr}_L";
-                case DSFBXArmorSlot.AM_M_Lowpoly: return $"AM_M_{ModelIDStr}_L";
-                case DSFBXArmorSlot.AM_F_Lowpoly: return $"AM_F_{ModelIDStr}_L";
-                case DSFBXArmorSlot.LG_A_Lowpoly: return $"LG_A_{ModelIDStr}_L";
-                case DSFBXArmorSlot.LG_M_Lowpoly: return $"LG_M_{ModelIDStr}_L";
-                case DSFBXArmorSlot.LG_F_Lowpoly: return $"LG_F_{ModelIDStr}_L";
             }
             return null;
         }
