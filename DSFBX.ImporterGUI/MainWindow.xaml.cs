@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -454,6 +455,9 @@ namespace DSFBX_GUI
             if (dlg.ShowDialog() == true)
             {
                 context.Config.InputFBX = dlg.FileName;
+                var idNumber = Regex.Match(dlg.FileName, @"\d+").Value;
+                if (!string.IsNullOrWhiteSpace(idNumber))
+                    context.Config.EntityModelID = int.Parse(idNumber);
                 SaveConfig();
             }
         }
