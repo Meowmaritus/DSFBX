@@ -458,8 +458,21 @@ namespace DSFBX_GUI
                 var idNumber = Regex.Match(dlg.FileName, @"\d+").Value;
                 if (!string.IsNullOrWhiteSpace(idNumber))
                     context.Config.EntityModelID = int.Parse(idNumber);
+                var armorExtension = System.IO.Path.GetFileNameWithoutExtension(dlg.FileName);
+                    GetExtension(armorExtension);
+
                 SaveConfig();
             }
+        }
+
+        private void GetExtension(string armorExtension)
+        {
+            if (armorExtension.ToLower().Contains("human"))
+                ArmorExtensionTypeDropdown.SelectedIndex = 0;
+            if (armorExtension.ToLower().Contains("hollow"))
+                ArmorExtensionTypeDropdown.SelectedIndex = 1;
+            if (armorExtension.ToLower().Contains("lowpoly"))
+                ArmorExtensionTypeDropdown.SelectedIndex = 2;
         }
 
         private void ButtonOutputBrowse_Click(object sender, RoutedEventArgs e)
