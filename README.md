@@ -1,3 +1,8 @@
+## Added a few features
+* Replaced "Copy Human to Hollow" with dropdown selection for Human, Hollow and Lowpoly
+* Auto detect Human Hollow or Lowpoly if included in FBX name
+* Auto detect Part ID number, if Part ID number is the only number in the FBX name
+
 # DSFBX
 Experimental FBX model importer for Dark Souls 1
 
