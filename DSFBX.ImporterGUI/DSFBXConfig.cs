@@ -13,6 +13,7 @@ namespace DSFBX_GUI
     {
         public string Manual_LastModelTypeDropdownOption = "Weapon";
 
+        public string Manual_LastArmorExtensionTypeDropdownOption = "Human";
 
         private bool _forceReloadCHR = true;
         public bool ForceReloadCHR
@@ -55,17 +56,6 @@ namespace DSFBX_GUI
             set
             {
                 _convertNormalsAxis = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private bool _armorCopyHumanToHollow = true;
-        public bool ArmorCopyHumanToHollow
-        {
-            get => _armorCopyHumanToHollow;
-            set
-            {
-                _armorCopyHumanToHollow = value;
                 RaisePropertyChanged();
             }
         }

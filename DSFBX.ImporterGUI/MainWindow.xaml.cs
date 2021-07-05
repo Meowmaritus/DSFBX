@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -152,6 +153,19 @@ namespace DSFBX_GUI
             {
                 ModelTypeDropdown.SelectedItem = ModelTypeDropdown_Armor;
             }
+
+            if (context.Config.Manual_LastArmorExtensionTypeDropdownOption == "Human")
+            {
+                ArmorExtensionTypeDropdown.SelectedItem = ArmorExtension_Human;
+            }
+            else if (context.Config.Manual_LastArmorExtensionTypeDropdownOption == "Hollow")
+            {
+                ArmorExtensionTypeDropdown.SelectedItem = ArmorExtension_Hollow;
+            }
+            else if (context.Config.Manual_LastArmorExtensionTypeDropdownOption == "Lowpoly")
+            {
+                ArmorExtensionTypeDropdown.SelectedItem = ArmorExtension_Lowpoly;
+            }
         }
 
         void SaveConfig()
@@ -171,6 +185,19 @@ namespace DSFBX_GUI
             else if (ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor)
             {
                 context.Config.Manual_LastModelTypeDropdownOption = "Armor";
+            }
+
+            if (ArmorExtensionTypeDropdown.SelectedItem == ArmorExtension_Human)
+            {
+                context.Config.Manual_LastArmorExtensionTypeDropdownOption = "Human";
+            }
+            else if (ArmorExtensionTypeDropdown.SelectedItem == ArmorExtension_Hollow)
+            {
+                context.Config.Manual_LastArmorExtensionTypeDropdownOption = "Hollow";
+            }
+            else if (ArmorExtensionTypeDropdown.SelectedItem == ArmorExtension_Lowpoly)
+            {
+                context.Config.Manual_LastArmorExtensionTypeDropdownOption = "Lowpoly";
             }
 
             string json = JsonConvert.SerializeObject(context.Config, Formatting.Indented);
@@ -229,7 +256,11 @@ namespace DSFBX_GUI
                 Importer.SceneRotation.X = (float)((context.Config.SceneRotationX / 180) * Math.PI);
                 Importer.SceneRotation.Y = (float)((context.Config.SceneRotationY / 180) * Math.PI);
                 Importer.SceneRotation.Z = (float)((context.Config.SceneRotationZ / 180) * Math.PI);
-                Importer.ArmorCopyHumanToHollow = context.Config.ArmorCopyHumanToHollow;
+                Importer.ArmorExtension = "";
+                if (Importer.OutputType == DSFBXOutputType.Armor)
+                {
+                    Importer.ArmorExtension = ArmorExtension.Dict[ArmorExtensionTypeDropdown.SelectedItem.ToString()];
+                }
                 Importer.ArmorCopyMaleLegsToFemale = context.Config.ArmorCopyMaleLegsToFemale;
                 Importer.ArmorFixBodyNormals = context.Config.ArmorFixBodyNormals;
                 Importer.RotateNormalsBackward = context.Config.RotateNormalsBackward;
@@ -424,8 +455,24 @@ namespace DSFBX_GUI
             if (dlg.ShowDialog() == true)
             {
                 context.Config.InputFBX = dlg.FileName;
+                var idNumber = Regex.Match(dlg.FileName, @"\d+").Value;
+                if (!string.IsNullOrWhiteSpace(idNumber))
+                    context.Config.EntityModelID = int.Parse(idNumber);
+                var armorExtension = System.IO.Path.GetFileNameWithoutExtension(dlg.FileName);
+                    GetExtension(armorExtension);
+
                 SaveConfig();
             }
+        }
+
+        private void GetExtension(string armorExtension)
+        {
+            if (armorExtension.ToLower().Contains("human"))
+                ArmorExtensionTypeDropdown.SelectedIndex = 0;
+            if (armorExtension.ToLower().Contains("hollow"))
+                ArmorExtensionTypeDropdown.SelectedIndex = 1;
+            if (armorExtension.ToLower().Contains("lowpoly"))
+                ArmorExtensionTypeDropdown.SelectedIndex = 2;
         }
 
         private void ButtonOutputBrowse_Click(object sender, RoutedEventArgs e)
@@ -546,7 +593,7 @@ namespace DSFBX_GUI
         private void ModelTypeDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CheckBoxArmorCopyMaleLegsToFemale.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
-            CheckBoxArmorCopyHumanToHollow.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
+            ArmorExtensionTypeDropdown.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
             CheckBoxArmorFixBodyNormals.IsEnabled = ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor;
 
             checkboxForceReloadPARTS.IsEnabled = ((ModelTypeDropdown.SelectedItem == ModelTypeDropdown_Armor 

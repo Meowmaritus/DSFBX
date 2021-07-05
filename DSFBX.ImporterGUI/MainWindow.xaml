@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DSFBX_GUI"
         mc:Ignorable="d"
-        Title="DSFBX Beta v1.1" 
+        Title="DSFBX Beta v1.2" 
         Width="773"
         Height="640" 
         MinWidth="960"
@@ -248,19 +248,6 @@
             </CheckBox>
 
             <CheckBox
-                x:Name="CheckBoxArmorCopyHumanToHollow"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="0,114,10,0"
-                Width="215"
-                HorizontalContentAlignment="Left"
-                VerticalContentAlignment="Center"
-                IsChecked="{Binding Config.ArmorCopyHumanToHollow}" Height="29"
-                >
-                Copy Human -> Hollow
-            </CheckBox>
-
-            <CheckBox
                 x:Name="CheckBoxArmorCopyMaleLegsToFemale"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
@@ -392,9 +379,16 @@
                 <ListBoxItem x:Name="ModelTypeDropdown_Weapon" Content="Weapon"/>
             </ComboBox>
 
+            <ComboBox x:Name="ArmorExtensionTypeDropdown" HorizontalAlignment="Right" Margin="0,120,10,0" VerticalAlignment="Top" Width="103" SelectionChanged="ModelTypeDropdown_SelectionChanged" RenderTransformOrigin="0.503,0.5">
+                <ListBoxItem x:Name="ArmorExtension_Human" Content="Human"/>
+                <ListBoxItem x:Name="ArmorExtension_Hollow" Content="Hollow"/>
+                <ListBoxItem x:Name="ArmorExtension_Lowpoly" Content="Lowpoly"/>
+            </ComboBox>
+
             <TextBox HorizontalAlignment="Right" Margin="0,95,10,0" VerticalAlignment="Top" Width="103" Text="{Binding Config.EntityModelID}"/>
             <Label Content="Model Type:" HorizontalAlignment="Right" Margin="0,64,119,0" VerticalAlignment="Top"/>
             <Label Content="Model ID:" HorizontalAlignment="Right" Margin="0,90,119,0" VerticalAlignment="Top"/>
+            <Label Content="Armor Type:" HorizontalAlignment="Right" Margin="0,115,119,0" VerticalAlignment="Top"/>
             <Label
                 Content="Dark Souls Remastered EXE Path:"
                 HorizontalAlignment="Left"
